@@ -45,9 +45,9 @@ const Index = () => {
     description: 'Investors in freedom tech',
     ogTitle: 'TEN31 | The World\'s Leading Bitcoin Technology Investor',
     ogDescription: 'Investors in freedom tech',
-    ogImage: 'https://www.ten31.xyz/og-image.jpg', 
+    ogImage: 'https://bullsats.com/og-image.jpg', 
     twitterCard: 'summary_large_image',
-    twitterImage: 'https://www.ten31.xyz/og-image.jpg',
+    twitterImage: 'https://bullsats.com/og-image.jpg',
   });
 
   return (
