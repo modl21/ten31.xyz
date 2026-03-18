@@ -11,9 +11,6 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center space-x-2 group mb-8">
-              <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center transition-transform group-hover:rotate-12">
-                 <span className="text-black font-heading font-bold text-lg">10</span>
-              </div>
               <span className="text-white font-heading font-bold text-2xl tracking-tighter uppercase">TEN31</span>
             </Link>
             <p className="text-white/50 text-lg max-w-sm font-medium leading-relaxed">
@@ -53,10 +50,6 @@ export const Footer = () => {
 
         <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-white/5 text-[10px] tracking-[0.25em] text-white/30 uppercase font-black font-heading">
           <p>© 2026 TEN31 LLC. ALL RIGHTS RESERVED.</p>
-          <div className="flex items-center space-x-12 mt-6 md:mt-0">
-             <span>VIBED WITH SHAKESPEARE</span>
-             <a href="https://shakespeare.diy" target="_blank" className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 decoration-2">GET STARTED</a>
-          </div>
         </div>
       </div>
     </footer>

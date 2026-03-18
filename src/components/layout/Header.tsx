@@ -1,12 +1,9 @@
 import { Link } from "react-router-dom";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { LoginArea } from "@/components/auth/LoginArea";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Header = () => {
-  const { user } = useCurrentUser();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -37,9 +34,6 @@ export const Header = () => {
     >
       <div className="container mx-auto px-6 h-full flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2 group">
-          <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center transition-transform group-hover:rotate-12">
-             <span className="text-black font-heading font-bold text-lg">10</span>
-          </div>
           <span className="text-white font-heading font-bold text-xl tracking-tighter">TEN31</span>
         </Link>
 
@@ -54,7 +48,6 @@ export const Header = () => {
               {link.name}
             </Link>
           ))}
-          <LoginArea className="bg-white text-black hover:bg-white/90 rounded-full h-9 px-4 text-xs font-bold transition-all hover:scale-105" />
         </nav>
 
         {/* Mobile menu trigger */}
@@ -79,9 +72,6 @@ export const Header = () => {
               {link.name}
             </Link>
           ))}
-          <div className="pt-4">
-            <LoginArea className="w-full justify-start h-12 text-lg" />
-          </div>
         </div>
       )}
     </header>

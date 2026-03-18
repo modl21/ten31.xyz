@@ -44,10 +44,7 @@ export const WhitePaper = () => {
             <div className="absolute inset-0 bg-[#f9f9f9]">
               <div className="absolute top-12 left-12 right-12 bottom-12 border-2 border-black/10 p-8 flex flex-col justify-between">
                 <div>
-                   <div className="w-12 h-12 bg-black mb-8 flex items-center justify-center">
-                     <span className="text-white font-heading font-bold">10</span>
-                   </div>
-                   <h3 className="font-heading font-black text-4xl text-black leading-tight tracking-tighter mb-4">THE<br/>NEW<br/>FRONT</h3>
+                   <h3 className="font-heading font-black text-4xl text-black leading-tight tracking-tighter mb-4 pt-10">THE<br/>NEW<br/>FRONT</h3>
                    <div className="w-16 h-1 bg-black"></div>
                 </div>
                 <div className="text-black/40 font-bold tracking-[0.2em] text-[10px]">RESEARCH REPORT</div>
