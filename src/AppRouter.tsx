@@ -4,7 +4,6 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import Team from "./pages/Team";
 import Funds from "./pages/Funds";
-import Invest from "./pages/Invest";
 import WhitePaper from "./pages/WhitePaper";
 import Insights from "./pages/Insights";
 import InsightPost from "./pages/InsightPost";
@@ -19,7 +18,6 @@ export function AppRouter() {
         <Route path="/" element={<Index />} />
         <Route path="/team" element={<Team />} />
         <Route path="/funds" element={<Funds />} />
-        <Route path="/invest" element={<Invest />} />
         <Route path="/white-paper" element={<WhitePaper />} />
         <Route path="/insights" element={<Insights />} />
         <Route path="/insights/:slug" element={<InsightPost />} />

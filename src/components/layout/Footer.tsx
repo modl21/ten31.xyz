@@ -14,7 +14,7 @@ export const Footer = () => {
               <span className="text-white font-heading font-bold text-2xl tracking-tighter uppercase">TEN31</span>
             </Link>
             <p className="text-white/50 text-lg max-w-sm font-medium leading-relaxed">
-              The world’s leading partner for founders building the financial and informational infrastructure of the future.
+              The world's leading investor in bitcoin infrastructure, open-source software, and freedom technology.
             </p>
           </div>
 
@@ -23,9 +23,8 @@ export const Footer = () => {
              <ul className="space-y-4">
                <li><a href="/#portfolio" className="text-white/60 hover:text-white transition-colors">Portfolio</a></li>
                <li><Link to="/team" className="text-white/60 hover:text-white transition-colors">Team</Link></li>
-               <li><Link to="/funds" className="text-white/60 hover:text-white transition-colors">Funds</Link></li>
-               <li><Link to="/invest" className="text-white/60 hover:text-white transition-colors">Invest</Link></li>
-               <li><Link to="/white-paper" className="text-white/60 hover:text-white transition-colors">White Paper</Link></li>
+                <li><Link to="/funds" className="text-white/60 hover:text-white transition-colors">Funds</Link></li>
+                <li><Link to="/white-paper" className="text-white/60 hover:text-white transition-colors">White Paper</Link></li>
              </ul>
           </div>
 
