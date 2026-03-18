@@ -138,8 +138,8 @@ const Index = () => {
               </div>
               <h3 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Giga Energy</h3>
               <p className="text-white/50 leading-relaxed max-w-md">
-                <span className="md:hidden">Natural gas bitcoin mining infrastructure. TEN31 was Giga's first investor.</span>
-                <span className="hidden md:inline">Texas-based natural gas bitcoin mining infrastructure provider. TEN31 was the first institutional investor in Giga, backing the company from its earliest days.</span>
+                <span className="md:hidden">Bitcoin mining and AI infrastructure. TEN31 was Giga's first investor.</span>
+                <span className="hidden md:inline">Texas-based bitcoin mining and AI infrastructure provider. TEN31 was the first institutional investor in Giga, backing the company from its earliest days.</span>
               </p>
             </a>
           </div>
