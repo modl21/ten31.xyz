@@ -77,7 +77,7 @@ const Index = () => {
             The world's leading investor in bitcoin infrastructure, open-source software, and freedom technology.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
             <Button size="lg" variant="outline" className="border-white/20 bg-black text-white hover:bg-white/10 rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all hover:scale-105" asChild>
               <a href="#portfolio">VIEW PORTFOLIO</a>
             </Button>
@@ -88,28 +88,24 @@ const Index = () => {
               <a href="https://www.ten31timestamp.com" target="_blank" rel="noreferrer">NEWSLETTER</a>
             </Button>
           </div>
-        </div>
-      </section>
 
-      {/* Stats/Credibility Banner */}
-      <section className="border-y border-white/10 bg-white/5 backdrop-blur-sm py-12">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-white/10">
-            <div className="text-center px-4">
-              <p className="text-4xl md:text-5xl font-heading font-bold text-white mb-2">$250M+</p>
-              <p className="text-xs tracking-[0.2em] uppercase text-white/50 font-bold">Capital Deployed</p>
+          {/* Inline Stats Banner */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 w-full max-w-5xl mx-auto pt-10 border-t border-white/10">
+            <div className="text-center group">
+              <p className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 mb-2 group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">$250M+</p>
+              <p className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/50 font-bold group-hover:text-white transition-colors">Capital Deployed</p>
             </div>
-            <div className="text-center px-4">
-              <p className="text-4xl md:text-5xl font-heading font-bold text-white mb-2">30+</p>
-              <p className="text-xs tracking-[0.2em] uppercase text-white/50 font-bold">Portfolio Companies</p>
+            <div className="text-center group">
+              <p className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 mb-2 group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">30+</p>
+              <p className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/50 font-bold group-hover:text-white transition-colors">Portfolio Companies</p>
             </div>
-            <div className="text-center px-4">
-              <p className="text-4xl md:text-5xl font-heading font-bold text-white mb-2">90%</p>
-              <p className="text-xs tracking-[0.2em] uppercase text-white/50 font-bold">Lead Investor Rate</p>
+            <div className="text-center group">
+              <p className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 mb-2 group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">90%</p>
+              <p className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/50 font-bold group-hover:text-white transition-colors">Lead Investor Rate</p>
             </div>
-            <div className="text-center px-4">
-              <p className="text-4xl md:text-5xl font-heading font-bold text-white mb-2">2013</p>
-              <p className="text-xs tracking-[0.2em] uppercase text-white/50 font-bold">Year Established</p>
+            <div className="text-center group">
+              <p className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 mb-2 group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">2013</p>
+              <p className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/50 font-bold group-hover:text-white transition-colors">Year Established</p>
             </div>
           </div>
         </div>
