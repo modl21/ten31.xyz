@@ -66,7 +66,7 @@ const Index = () => {
         <div className="container mx-auto px-6 relative z-10 flex flex-col items-center text-center">
           <div className="inline-flex items-center space-x-2 border border-white/20 rounded-full px-4 py-1.5 mb-10 bg-white/5 backdrop-blur-sm">
             <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-            <span className="text-xs font-bold tracking-[0.2em] uppercase text-white/80">Committed to Freedom Tech</span>
+            <span className="text-xs font-bold tracking-[0.2em] uppercase text-white/80">Committed to Freedom</span>
           </div>
 
           <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-heading font-bold leading-[0.85] tracking-tighter mb-8 max-w-6xl text-gradient">
