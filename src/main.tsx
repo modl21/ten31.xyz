@@ -9,6 +9,7 @@ import './index.css';
 
 import '@fontsource-variable/space-grotesk';
 import '@fontsource-variable/inter';
+import '@fontsource-variable/source-serif-4';
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>

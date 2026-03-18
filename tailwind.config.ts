@@ -22,6 +22,7 @@ export default {
 			fontFamily: {
 				sans: ["Inter Variable", "sans-serif"],
 				heading: ["Space Grotesk Variable", "sans-serif"],
+				serif: ["Source Serif 4 Variable", "Georgia", "serif"],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

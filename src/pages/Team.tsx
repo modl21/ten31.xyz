@@ -53,32 +53,32 @@ export const Team = () => {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
 
       <main className="pt-32 pb-24 px-6">
         <div className="container mx-auto max-w-6xl">
           <div className="max-w-3xl mb-20">
             <h1 className="text-5xl md:text-6xl font-heading font-bold tracking-tight mb-6">Team</h1>
-            <p className="text-lg text-white/50 leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed font-serif">
               A collective of veterans with decades of experience in global private equity, venture capital, and deep roots in the bitcoin ecosystem.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-14">
             {TEAM.map((member, i) => (
               <div key={i} className="group">
-                <div className="aspect-[3/4] overflow-hidden mb-6 bg-white/5 grayscale group-hover:grayscale-0 transition-all duration-500">
+                <div className="aspect-[3/4] overflow-hidden mb-6 bg-muted rounded-lg">
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full object-cover object-center"
+                    className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-500"
                     loading="lazy"
                   />
                 </div>
                 <h3 className="text-xl font-heading font-bold mb-1">{member.name}</h3>
-                <p className="text-xs tracking-widest uppercase text-white/40 mb-3">{member.role}</p>
-                <p className="text-sm text-white/50 leading-relaxed">{member.bio}</p>
+                <p className="text-xs tracking-widest uppercase text-muted-foreground/60 mb-3 font-medium">{member.role}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed font-serif">{member.bio}</p>
               </div>
             ))}
           </div>

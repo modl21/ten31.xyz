@@ -20,19 +20,19 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Header />
 
       <main className="flex-grow flex items-center justify-center px-6">
         <div className="text-center">
-          <p className="text-8xl font-heading font-bold text-white/10 mb-6">404</p>
+          <p className="text-8xl font-heading font-bold text-muted/80 mb-6">404</p>
           <h1 className="text-2xl md:text-3xl font-heading font-bold mb-4">Page Not Found</h1>
-          <p className="text-white/40 mb-8 max-w-md mx-auto">
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto font-serif">
             The resource you are looking for has been moved, removed, or does not exist.
           </p>
           <Link
             to="/"
-            className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide bg-white text-black hover:bg-white/90 transition-colors"
+            className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide bg-foreground text-background hover:bg-foreground/90 transition-colors rounded-md"
           >
             <ArrowLeft className="w-4 h-4 mr-3" />
             Return to Home

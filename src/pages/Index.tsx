@@ -44,10 +44,10 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
 
-      {/* Hero Section — everything above the fold */}
+      {/* Hero Section */}
       <section className="min-h-[100vh] flex flex-col justify-between px-6 pt-24 pb-12 md:pt-28 md:pb-16">
         <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
           <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-heading font-bold leading-[1.05] tracking-tight mb-6 md:mb-8">
@@ -55,7 +55,7 @@ const Index = () => {
             <span className="hidden md:inline">The world's leading investor<br className="hidden lg:inline" /> in freedom technology.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-white/50 max-w-2xl leading-relaxed mb-8 md:mb-12">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed mb-8 md:mb-12 font-serif">
             <span className="md:hidden">$250M+ deployed across 30+ companies since 2020.</span>
             <span className="hidden md:inline">Since 2020, we have deployed over $250M across 30+ companies building foundational technologies for the financial infrastructure of the future.</span>
           </p>
@@ -63,13 +63,13 @@ const Index = () => {
           <div className="flex flex-wrap gap-4">
             <a
               href="#portfolio"
-              className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide border border-white/20 text-white hover:bg-white hover:text-black transition-colors"
+              className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide border border-border text-foreground hover:bg-foreground hover:text-background transition-colors rounded-md"
             >
               Portfolio
             </a>
             <Link
               to="/funds"
-              className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide bg-white text-black hover:bg-white/90 transition-colors"
+              className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide bg-foreground text-background hover:bg-foreground/90 transition-colors rounded-md"
             >
               Explore Funds
             </Link>
@@ -77,7 +77,7 @@ const Index = () => {
               href="https://www.ten31timestamp.com"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition-colors"
+              className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide border border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors rounded-md"
             >
               Newsletter
               <ArrowUpRight className="w-4 h-4 ml-2" />
@@ -86,7 +86,7 @@ const Index = () => {
         </div>
 
         {/* Stats pinned to bottom of viewport */}
-        <div className="container mx-auto max-w-6xl pt-10 md:pt-12 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12">
+        <div className="container mx-auto max-w-6xl pt-10 md:pt-12 border-t border-border grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12">
           {[
             { value: '$250M+', label: 'Capital Deployed' },
             { value: '30+', label: 'Portfolio Companies' },
@@ -95,31 +95,31 @@ const Index = () => {
           ].map((stat) => (
             <div key={stat.label}>
               <p className="text-2xl md:text-4xl font-heading font-bold tracking-tight mb-1">{stat.value}</p>
-              <p className="text-[10px] md:text-xs tracking-widest uppercase text-white/40">{stat.label}</p>
+              <p className="text-[10px] md:text-xs tracking-widest uppercase text-muted-foreground/60">{stat.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Featured Investments — Strike & Giga highlighted */}
-      <section className="py-28 px-6">
+      {/* Featured Investments — Strike & Giga */}
+      <section className="py-24 md:py-28 px-6 bg-card">
         <div className="container mx-auto max-w-6xl">
-          <p className="text-xs tracking-widest uppercase text-white/40 mb-10">Featured Investments</p>
+          <p className="text-xs tracking-widest uppercase text-muted-foreground/60 mb-10 font-medium">Featured Investments</p>
 
-          <div className="grid md:grid-cols-2 gap-px bg-white/10">
+          <div className="grid md:grid-cols-2 gap-8">
             {/* Strike */}
             <a
               href="https://strike.me"
               target="_blank"
               rel="noreferrer"
-              className="bg-black p-10 md:p-14 group hover:bg-white/[0.03] transition-colors"
+              className="group p-8 md:p-12 border border-border rounded-lg hover:border-foreground/20 hover:shadow-sm transition-all"
             >
-              <div className="flex items-start justify-between mb-8">
-                <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 border border-white/10 px-3 py-1">Largest Investor</span>
-                <ArrowUpRight className="w-5 h-5 text-white/0 group-hover:text-white/60 transition-colors" />
+              <div className="flex items-start justify-between mb-6">
+                <span className="inline-block text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50 bg-muted px-3 py-1 rounded-full">Largest Investor</span>
+                <ArrowUpRight className="w-5 h-5 text-transparent group-hover:text-muted-foreground transition-colors" />
               </div>
-              <h3 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Strike</h3>
-              <p className="text-white/50 leading-relaxed max-w-md">
+              <h3 className="text-3xl md:text-4xl font-heading font-bold tracking-tight mb-4">Strike</h3>
+              <p className="text-muted-foreground leading-relaxed font-serif">
                 <span className="md:hidden">Bitcoin and lightning financial services. TEN31 is Strike's largest investor.</span>
                 <span className="hidden md:inline">The leading bitcoin and lightning financial services platform. TEN31 is the largest investor in Strike, reflecting our deep conviction in the company's mission to build the future of payments.</span>
               </p>
@@ -130,14 +130,14 @@ const Index = () => {
               href="https://www.gigaenergy.com"
               target="_blank"
               rel="noreferrer"
-              className="bg-black p-10 md:p-14 group hover:bg-white/[0.03] transition-colors"
+              className="group p-8 md:p-12 border border-border rounded-lg hover:border-foreground/20 hover:shadow-sm transition-all"
             >
-              <div className="flex items-start justify-between mb-8">
-                <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 border border-white/10 px-3 py-1">First Investor</span>
-                <ArrowUpRight className="w-5 h-5 text-white/0 group-hover:text-white/60 transition-colors" />
+              <div className="flex items-start justify-between mb-6">
+                <span className="inline-block text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50 bg-muted px-3 py-1 rounded-full">First Investor</span>
+                <ArrowUpRight className="w-5 h-5 text-transparent group-hover:text-muted-foreground transition-colors" />
               </div>
-              <h3 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Giga Energy</h3>
-              <p className="text-white/50 leading-relaxed max-w-md">
+              <h3 className="text-3xl md:text-4xl font-heading font-bold tracking-tight mb-4">Giga Energy</h3>
+              <p className="text-muted-foreground leading-relaxed font-serif">
                 <span className="md:hidden">Bitcoin mining and AI infrastructure. TEN31 was Giga's first investor.</span>
                 <span className="hidden md:inline">Texas-based bitcoin mining and AI infrastructure provider. TEN31 was the first institutional investor in Giga, backing the company from its earliest days.</span>
               </p>
@@ -146,30 +146,30 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Thesis Section — clean and direct */}
-      <section id="thesis" className="py-28 px-6 border-t border-white/10">
+      {/* Thesis Section */}
+      <section id="thesis" className="py-24 md:py-28 px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-20">
+          <div className="grid lg:grid-cols-2 gap-16 lg:gap-20">
             <div>
               <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-8">
                 Investment Thesis
               </h2>
-              <p className="text-lg text-white/50 leading-relaxed mb-12">
+              <p className="text-lg text-muted-foreground leading-relaxed font-serif">
                 <span className="md:hidden">Backing companies at the intersection of bitcoin, energy, decentralized systems, and open financial architecture.</span>
                 <span className="hidden md:inline">We partner with next-generation companies building foundational technologies for the financial and informational infrastructure of the future. Our portfolio sits at the intersection of powerful secular trends, backing enterprises that secure sovereignty through energy resilience, decentralized systems, and uncompromising financial architecture.</span>
               </p>
             </div>
 
-            <div className="space-y-0 border-t border-white/10 lg:border-t-0 lg:border-l lg:border-white/10 lg:pl-20 pt-8 lg:pt-0">
+            <div className="space-y-0 border-t border-border lg:border-t-0 lg:border-l lg:border-border lg:pl-16 xl:pl-20 pt-8 lg:pt-0">
               {[
                 { title: 'Bitcoin Native', desc: 'Trading, payments, custody, security, and computing infrastructure.' },
                 { title: 'Open Source Software', desc: 'The proliferation and virality of decentralized, permissionless code.' },
                 { title: 'Nostr & Communications', desc: 'New communications and media applications catalyzed by the nostr ecosystem.' },
                 { title: 'Artificial Intelligence', desc: 'Unprecedented productivity improvements progressively converging with bitcoin.' },
               ].map((item, i) => (
-                <div key={i} className="py-6 border-b border-white/10 last:border-b-0">
+                <div key={i} className="py-5 border-b border-border last:border-b-0">
                   <h3 className="text-lg font-heading font-bold mb-1">{item.title}</h3>
-                  <p className="text-sm text-white/40 leading-relaxed">{item.desc}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed font-serif">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -178,17 +178,17 @@ const Index = () => {
       </section>
 
       {/* Portfolio Section */}
-      <section id="portfolio" className="py-28 px-6 border-t border-white/10">
+      <section id="portfolio" className="py-24 md:py-28 px-6 bg-card">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
             <div>
               <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Portfolio</h2>
-              <p className="text-lg text-white/50 max-w-xl">
+              <p className="text-lg text-muted-foreground max-w-xl font-serif">
                 <span className="md:hidden">30+ companies across freedom tech.</span>
                 <span className="hidden md:inline">The founders leading the charge across the spectrum of freedom tech.</span>
               </p>
             </div>
-            <p className="text-xs tracking-widest uppercase text-white/30">{PORTFOLIO.length} Companies</p>
+            <p className="text-xs tracking-widest uppercase text-muted-foreground/50 font-medium">{PORTFOLIO.length} Companies</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-0">
@@ -198,13 +198,13 @@ const Index = () => {
                 href={item.link}
                 target="_blank"
                 rel="noreferrer"
-                className="group py-6 border-b border-white/10 hover:border-white/30 transition-colors flex items-center justify-between"
+                className="group py-5 border-b border-border hover:border-foreground/30 transition-colors flex items-center justify-between"
               >
                 <div>
-                  <h3 className="text-base font-heading font-bold group-hover:text-white transition-colors">{item.name}</h3>
-                  <p className="text-xs text-white/30 mt-0.5">{item.category}</p>
+                  <h3 className="text-base font-heading font-bold group-hover:text-foreground transition-colors">{item.name}</h3>
+                  <p className="text-xs text-muted-foreground/60 mt-0.5">{item.category}</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-white/0 group-hover:text-white/60 transition-colors shrink-0 ml-4" />
+                <ArrowRight className="w-4 h-4 text-transparent group-hover:text-muted-foreground transition-colors shrink-0 ml-4" />
               </a>
             ))}
           </div>
@@ -212,16 +212,16 @@ const Index = () => {
       </section>
 
       {/* Team CTA */}
-      <section className="py-28 px-6 border-t border-white/10">
+      <section className="py-24 md:py-28 px-6">
         <div className="container mx-auto max-w-6xl text-center">
           <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-6">Pioneered by Industry Vets</h2>
-          <p className="text-lg text-white/50 max-w-xl mx-auto mb-10">
+          <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 font-serif">
             <span className="md:hidden">Decades of experience in PE, VC, and bitcoin since 2013.</span>
             <span className="hidden md:inline">Led by experts with decades of experience in private equity, venture capital, and deep roots in the bitcoin ecosystem since 2013.</span>
           </p>
           <Link
             to="/team"
-            className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide bg-white text-black hover:bg-white/90 transition-colors"
+            className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide bg-foreground text-background hover:bg-foreground/90 transition-colors rounded-md"
           >
             Meet the Team
             <ArrowRight className="w-4 h-4 ml-2" />
