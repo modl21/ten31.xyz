@@ -1,11 +1,13 @@
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,11 +17,31 @@ export const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const scrollToHash = useCallback((hash: string) => {
+    const el = document.querySelector(hash);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
+  const handleHashClick = useCallback((e: React.MouseEvent, hash: string) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+
+    if (location.pathname === "/") {
+      scrollToHash(hash);
+    } else {
+      navigate("/");
+      // Wait for navigation then scroll
+      setTimeout(() => scrollToHash(hash), 100);
+    }
+  }, [location.pathname, navigate, scrollToHash]);
+
   const navLinks = [
-    { name: "Portfolio", href: "/#portfolio" },
-    { name: "Blog", href: "/insights" },
-    { name: "Team", href: "/team" },
-    { name: "Funds", href: "/funds" },
+    { name: "Portfolio", href: "/#portfolio", hash: "#portfolio" },
+    { name: "Blog", href: "/insights", hash: null },
+    { name: "Team", href: "/team", hash: null },
+    { name: "Funds", href: "/funds", hash: null },
   ];
 
   return (
@@ -38,15 +60,26 @@ export const Header = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.href}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {link.name}
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            link.hash ? (
+              <a
+                key={link.name}
+                href={link.href}
+                onClick={(e) => handleHashClick(e, link.hash)}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {link.name}
+              </a>
+            ) : (
+              <Link
+                key={link.name}
+                to={link.href}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {link.name}
+              </Link>
+            )
+          )}
           <a
             href="https://www.ten31timestamp.com"
             target="_blank"
@@ -69,16 +102,27 @@ export const Header = () => {
       {/* Mobile Nav */}
       {isMenuOpen && (
         <div className="md:hidden fixed inset-0 top-[60px] bg-background z-40 p-6 flex flex-col gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.href}
-              onClick={() => setIsMenuOpen(false)}
-              className="text-xl font-heading font-bold text-foreground border-b border-border pb-4"
-            >
-              {link.name}
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            link.hash ? (
+              <a
+                key={link.name}
+                href={link.href}
+                onClick={(e) => handleHashClick(e, link.hash)}
+                className="text-xl font-heading font-bold text-foreground border-b border-border pb-4"
+              >
+                {link.name}
+              </a>
+            ) : (
+              <Link
+                key={link.name}
+                to={link.href}
+                onClick={() => setIsMenuOpen(false)}
+                className="text-xl font-heading font-bold text-foreground border-b border-border pb-4"
+              >
+                {link.name}
+              </Link>
+            )
+          )}
           <a
             href="https://www.ten31timestamp.com"
             target="_blank"
