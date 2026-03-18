@@ -25,60 +25,69 @@ export const Header = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled
-          ? "bg-black/80 backdrop-blur-md border-white/10 py-3"
-          : "bg-transparent border-transparent py-6"
+          ? "bg-black/90 backdrop-blur-sm border-b border-white/10 py-4"
+          : "bg-transparent py-6"
       )}
     >
-      <div className="container mx-auto px-6 h-full flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2 group">
-          <span className="text-white font-heading font-bold text-xl tracking-tighter">TEN31</span>
+      <div className="container mx-auto max-w-6xl px-6 flex items-center justify-between">
+        <Link to="/" className="text-white font-heading font-bold text-lg tracking-tight">
+          TEN31
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.href}
-              className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+              className="text-sm text-white/50 hover:text-white transition-colors"
             >
               {link.name}
             </Link>
           ))}
-          <a 
-            href="https://www.ten31timestamp.com" 
-            target="_blank" 
+          <a
+            href="https://www.ten31timestamp.com"
+            target="_blank"
             rel="noreferrer"
-            className="bg-white text-black hover:bg-white/90 rounded-none h-9 px-6 text-xs font-bold tracking-[0.1em] flex items-center justify-center transition-all hover:scale-105"
+            className="text-sm text-white/50 hover:text-white transition-colors"
           >
-            NEWSLETTER
+            Newsletter
           </a>
         </nav>
 
         {/* Mobile menu trigger */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-white/70 hover:text-white transition-colors"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          {isMenuOpen ? <X /> : <Menu />}
+          {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
       {/* Mobile Nav */}
       {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-[60px] bg-black z-40 p-6 flex flex-col space-y-6 animate-in slide-in-from-top duration-300">
+        <div className="md:hidden fixed inset-0 top-[60px] bg-black z-40 p-6 flex flex-col gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.href}
               onClick={() => setIsMenuOpen(false)}
-              className="text-2xl font-heading font-bold text-white border-b border-white/10 pb-4"
+              className="text-xl font-heading font-bold text-white border-b border-white/10 pb-4"
             >
               {link.name}
             </Link>
           ))}
+          <a
+            href="https://www.ten31timestamp.com"
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => setIsMenuOpen(false)}
+            className="text-xl font-heading font-bold text-white border-b border-white/10 pb-4"
+          >
+            Newsletter
+          </a>
         </div>
       )}
     </header>

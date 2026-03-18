@@ -1,54 +1,54 @@
 import { Link } from "react-router-dom";
-import { Mail, MapPin, Twitter, Github } from "lucide-react";
 
 export const Footer = () => {
   return (
-    <footer className="bg-black border-t border-white/10 pt-20 pb-12 overflow-hidden">
-      <div className="container mx-auto px-6 relative isolate">
-        {/* Subtle background glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-white/5 blur-[120px] rounded-[50%] -z-10" />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-          <div className="col-span-1 md:col-span-2">
-            <Link to="/" className="flex items-center space-x-2 group mb-8">
-              <span className="text-white font-heading font-bold text-2xl tracking-tighter uppercase">TEN31</span>
+    <footer className="border-t border-white/10 py-16">
+      <div className="container mx-auto max-w-6xl px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+          <div>
+            <Link to="/" className="font-heading font-bold text-lg tracking-tight text-white block mb-4">
+              TEN31
             </Link>
-            <p className="text-white/50 text-lg max-w-sm font-medium leading-relaxed">
+            <p className="text-sm text-white/40 leading-relaxed max-w-xs">
               The world's leading investor in bitcoin infrastructure, open-source software, and freedom technology.
             </p>
           </div>
 
           <div>
-             <h4 className="text-white font-heading font-bold uppercase text-sm tracking-[0.2em] mb-6">EXPLORE</h4>
-             <ul className="space-y-4">
-               <li><a href="/#portfolio" className="text-white/60 hover:text-white transition-colors">Portfolio</a></li>
-               <li><Link to="/team" className="text-white/60 hover:text-white transition-colors">Team</Link></li>
-                <li><Link to="/funds" className="text-white/60 hover:text-white transition-colors">Funds</Link></li>
-                <li><Link to="/white-paper" className="text-white/60 hover:text-white transition-colors">White Paper</Link></li>
-             </ul>
+            <p className="text-xs tracking-widest uppercase text-white/30 mb-4">Navigate</p>
+            <ul className="space-y-3">
+              <li><a href="/#portfolio" className="text-sm text-white/50 hover:text-white transition-colors">Portfolio</a></li>
+              <li><Link to="/team" className="text-sm text-white/50 hover:text-white transition-colors">Team</Link></li>
+              <li><Link to="/funds" className="text-sm text-white/50 hover:text-white transition-colors">Funds</Link></li>
+              <li><Link to="/insights" className="text-sm text-white/50 hover:text-white transition-colors">Blog</Link></li>
+              <li><Link to="/white-paper" className="text-sm text-white/50 hover:text-white transition-colors">White Paper</Link></li>
+            </ul>
           </div>
 
           <div>
-             <h4 className="text-white font-heading font-bold uppercase text-sm tracking-[0.2em] mb-6">LOCATIONS</h4>
-             <ul className="space-y-6">
-               <li className="flex items-start space-x-3 text-white/60">
-                 <MapPin className="w-5 h-5 mt-0.5 shrink-0 text-white/30" />
-                 <span>Bitcoin Park Nashville<br />1910 21st Ave, Nashville, TN 37212</span>
-               </li>
-               <li className="flex items-start space-x-3 text-white/60">
-                 <MapPin className="w-5 h-5 mt-0.5 shrink-0 text-white/30" />
-                 <span>Bitcoin Park Austin<br />601 Congress Ave, Austin, TX 78701</span>
-               </li>
-               <li className="flex items-center space-x-3 text-white/60">
-                 <Mail className="w-5 h-5 shrink-0 text-white/30" />
-                 <a href="mailto:ir@ten31.vc" className="hover:text-white transition-colors">ir@ten31.vc</a>
-               </li>
-             </ul>
+            <p className="text-xs tracking-widest uppercase text-white/30 mb-4">Contact</p>
+            <ul className="space-y-3 text-sm text-white/50">
+              <li>
+                <a href="mailto:ir@ten31.vc" className="hover:text-white transition-colors">ir@ten31.vc</a>
+              </li>
+              <li>Bitcoin Park Nashville</li>
+              <li>1910 21st Ave, Nashville, TN 37212</li>
+            </ul>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-white/5 text-[10px] tracking-[0.25em] text-white/30 uppercase font-black font-heading">
-          <p>© 2026 TEN31 LLC. ALL RIGHTS RESERVED.</p>
+        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <p className="text-[11px] tracking-wider uppercase text-white/20">
+            &copy; {new Date().getFullYear()} TEN31 LLC
+          </p>
+          <a
+            href="https://shakespeare.diy"
+            target="_blank"
+            rel="noreferrer"
+            className="text-[11px] tracking-wider text-white/20 hover:text-white/40 transition-colors"
+          >
+            Vibed with Shakespeare
+          </a>
         </div>
       </div>
     </footer>

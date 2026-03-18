@@ -1,8 +1,7 @@
 import { useSeoMeta } from '@unhead/react';
-import { ArrowRight, ChevronRight, Activity, Network, Shield, Zap } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const PORTFOLIO = [
@@ -48,147 +47,158 @@ const Index = () => {
     <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative min-h-[95vh] flex items-center justify-center overflow-hidden pt-20 isolate">
-        <div className="absolute inset-0 z-[-1]">
-          {/* Subtle geometric background or grid pattern */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05)_0%,rgba(0,0,0,1)_80%)]"></div>
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/5 blur-[150px] rounded-full animate-pulse blur-[180px]"></div>
-        </div>
-
-        <div className="container mx-auto px-6 relative z-10 flex flex-col items-center text-center">
-          <div className="inline-flex items-center space-x-2 border border-white/20 rounded-full px-4 py-1.5 mb-10 bg-white/5 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-            <span className="text-xs font-bold tracking-[0.2em] uppercase text-white/80">Committed to Freedom</span>
-          </div>
-
-          <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-heading font-bold leading-[0.85] tracking-tighter mb-8 max-w-6xl text-gradient">
-            BUILDING THE<br />NEW FRONT.
+      {/* Hero Section — extreme minimalism */}
+      <section className="min-h-[100vh] flex flex-col justify-center px-6 pt-20">
+        <div className="container mx-auto max-w-6xl">
+          <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-heading font-bold leading-[1.05] tracking-tight mb-8">
+            The world's leading investor<br className="hidden lg:block" /> in bitcoin infrastructure<br className="hidden lg:block" /> and freedom technology.
           </h1>
-          
-          <p className="text-xl md:text-2xl text-white/60 max-w-2xl font-medium leading-relaxed mb-12">
-            The world's leading investor in bitcoin infrastructure, open-source software, and freedom technology.
+
+          <p className="text-lg md:text-xl text-white/50 max-w-2xl leading-relaxed mb-12">
+            Since 2013, we have deployed over $250M across 30+ companies building foundational technologies for the financial and informational infrastructure of the future.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
-            <Button size="lg" variant="outline" className="border-white/20 bg-black text-white hover:bg-white/10 rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all hover:scale-105" asChild>
-              <a href="#portfolio">VIEW PORTFOLIO</a>
-            </Button>
-            <Button size="lg" className="bg-white text-black hover:bg-white/90 rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all" asChild>
-              <Link to="/funds">EXPLORE FUNDS</Link>
-            </Button>
-            <Button size="lg" variant="outline" className="border-white/20 bg-black text-white hover:bg-white/10 rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all" asChild>
-              <a href="https://www.ten31timestamp.com" target="_blank" rel="noreferrer">NEWSLETTER</a>
-            </Button>
-          </div>
-
-          {/* Inline Stats Banner */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 w-full max-w-5xl mx-auto pt-10 border-t border-white/10">
-            <div className="text-center group">
-              <p className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 mb-2 group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">$250M+</p>
-              <p className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/50 font-bold group-hover:text-white transition-colors">Capital Deployed</p>
-            </div>
-            <div className="text-center group">
-              <p className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 mb-2 group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">30+</p>
-              <p className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/50 font-bold group-hover:text-white transition-colors">Portfolio Companies</p>
-            </div>
-            <div className="text-center group">
-              <p className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 mb-2 group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">90%</p>
-              <p className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/50 font-bold group-hover:text-white transition-colors">Lead Investor Rate</p>
-            </div>
-            <div className="text-center group">
-              <p className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 mb-2 group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">2013</p>
-              <p className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/50 font-bold group-hover:text-white transition-colors">Year Established</p>
-            </div>
+          <div className="flex flex-wrap gap-4">
+            <a
+              href="#portfolio"
+              className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide border border-white/20 text-white hover:bg-white hover:text-black transition-colors"
+            >
+              Portfolio
+            </a>
+            <Link
+              to="/funds"
+              className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide bg-white text-black hover:bg-white/90 transition-colors"
+            >
+              Explore Funds
+            </Link>
+            <a
+              href="https://www.ten31timestamp.com"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition-colors"
+            >
+              Newsletter
+              <ArrowUpRight className="w-4 h-4 ml-2" />
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Thesis Section */}
-      <section id="thesis" className="py-32 relative">
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <h2 className="text-5xl md:text-7xl font-heading font-bold tracking-tighter mb-8 leading-tight">GENERATIONAL<br /><span className="text-white/40">TAILWINDS.</span></h2>
-              <p className="text-xl text-white/60 leading-relaxed font-medium mb-12">
-                We partner with next-generation companies building foundational technologies for the financial and informational infrastructure of the future. Our portfolio sits at the intersection of powerful secular trends, backing enterprises that secure American sovereignty through energy resilience, decentralized systems, and uncompromising financial architecture.
-              </p>
-              
-              <div className="space-y-8">
-                {[
-                  { title: "Bitcoin Native", desc: "Trading, payments, custody, security, and computing infrastructure.", icon: <Activity className="w-6 h-6" /> },
-                  { title: "Open Source Software", desc: "The proliferation and virality of decentralized, permissionless code.", icon: <Network className="w-6 h-6" /> },
-                  { title: "Nostr & Communications", desc: "New communications and media applications catalyzed by the nostr ecosystem.", icon: <Zap className="w-6 h-6" /> },
-                  { title: "Artificial Intelligence", desc: "Unprecedented productivity improvements progressively converging with bitcoin.", icon: <Shield className="w-6 h-6" /> }
-                ].map((item, i) => (
-                  <div key={i} className="flex space-x-6 items-start group">
-                    <div className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-sm text-white group-hover:bg-white group-hover:text-black transition-colors shrink-0">
-                      {item.icon}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-heading font-bold mb-2">{item.title}</h3>
-                      <p className="text-white/50 leading-relaxed">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+      {/* Key stats — understated horizontal bar */}
+      <section className="border-y border-white/10">
+        <div className="container mx-auto max-w-6xl px-6 py-16 grid grid-cols-2 lg:grid-cols-4 gap-12">
+          {[
+            { value: '$250M+', label: 'Capital Deployed' },
+            { value: '30+', label: 'Portfolio Companies' },
+            { value: '90%', label: 'Lead Investor Rate' },
+            { value: '2013', label: 'Year Established' },
+          ].map((stat) => (
+            <div key={stat.label}>
+              <p className="text-3xl md:text-4xl font-heading font-bold tracking-tight mb-1">{stat.value}</p>
+              <p className="text-xs tracking-widest uppercase text-white/40">{stat.label}</p>
             </div>
-            
-            {/* Visual element */}
-            <div className="relative h-[600px] rounded-sm overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center isolate">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_100%)]"></div>
-              {/* Abstract decorative graphic representing connectivity */}
-              <div className="relative w-full h-full flex items-center justify-center opacity-40">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="absolute border border-white/20 rounded-[40%] animate-[spin_20s_linear_infinite]" 
-                       style={{ 
-                         width: `${300 + i * 100}px`, 
-                         height: `${300 + i * 100}px`,
-                         animationDuration: `${20 + i * 5}s`,
-                         animationDirection: i % 2 === 0 ? 'normal' : 'reverse'
-                       }}>
-                  </div>
-                ))}
-                <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-[0_0_100px_rgba(255,255,255,0.5)] z-10">
-                   <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center">
-                     <span className="text-white font-heading font-bold text-3xl">₿</span>
-                   </div>
-                </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Featured Investments — Strike & Giga highlighted */}
+      <section className="py-28 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <p className="text-xs tracking-widest uppercase text-white/40 mb-10">Featured Investments</p>
+
+          <div className="grid md:grid-cols-2 gap-px bg-white/10">
+            {/* Strike */}
+            <a
+              href="https://strike.me"
+              target="_blank"
+              rel="noreferrer"
+              className="bg-black p-10 md:p-14 group hover:bg-white/[0.03] transition-colors"
+            >
+              <div className="flex items-start justify-between mb-8">
+                <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 border border-white/10 px-3 py-1">Largest Investor</span>
+                <ArrowUpRight className="w-5 h-5 text-white/0 group-hover:text-white/60 transition-colors" />
               </div>
+              <h3 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Strike</h3>
+              <p className="text-white/50 leading-relaxed max-w-md">
+                The leading bitcoin and lightning financial services platform. TEN31 is the largest investor in Strike, reflecting our deep conviction in the company's mission to build the future of payments.
+              </p>
+            </a>
+
+            {/* Giga Energy */}
+            <a
+              href="https://www.gigaenergy.com"
+              target="_blank"
+              rel="noreferrer"
+              className="bg-black p-10 md:p-14 group hover:bg-white/[0.03] transition-colors"
+            >
+              <div className="flex items-start justify-between mb-8">
+                <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 border border-white/10 px-3 py-1">First Investor</span>
+                <ArrowUpRight className="w-5 h-5 text-white/0 group-hover:text-white/60 transition-colors" />
+              </div>
+              <h3 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Giga Energy</h3>
+              <p className="text-white/50 leading-relaxed max-w-md">
+                Texas-based natural gas bitcoin mining infrastructure provider. TEN31 was the first institutional investor in Giga, backing the company from its earliest days.
+              </p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Thesis Section — clean and direct */}
+      <section id="thesis" className="py-28 px-6 border-t border-white/10">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-20">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-8">
+                Investment Thesis
+              </h2>
+              <p className="text-lg text-white/50 leading-relaxed mb-12">
+                We partner with next-generation companies building foundational technologies for the financial and informational infrastructure of the future. Our portfolio sits at the intersection of powerful secular trends, backing enterprises that secure sovereignty through energy resilience, decentralized systems, and uncompromising financial architecture.
+              </p>
+            </div>
+
+            <div className="space-y-0 border-t border-white/10 lg:border-t-0 lg:border-l lg:border-white/10 lg:pl-20 pt-8 lg:pt-0">
+              {[
+                { title: 'Bitcoin Native', desc: 'Trading, payments, custody, security, and computing infrastructure.' },
+                { title: 'Open Source Software', desc: 'The proliferation and virality of decentralized, permissionless code.' },
+                { title: 'Nostr & Communications', desc: 'New communications and media applications catalyzed by the nostr ecosystem.' },
+                { title: 'Artificial Intelligence', desc: 'Unprecedented productivity improvements progressively converging with bitcoin.' },
+              ].map((item, i) => (
+                <div key={i} className="py-6 border-b border-white/10 last:border-b-0">
+                  <h3 className="text-lg font-heading font-bold mb-1">{item.title}</h3>
+                  <p className="text-sm text-white/40 leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
       {/* Portfolio Section */}
-      <section id="portfolio" className="py-32 bg-white/5 border-y border-white/10">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+      <section id="portfolio" className="py-28 px-6 border-t border-white/10">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div>
-              <h2 className="text-5xl md:text-7xl font-heading font-bold tracking-tighter mb-6 leading-tight">UNMATCHED<br /><span className="text-white/40">GLOBAL PORTFOLIO.</span></h2>
-              <p className="text-xl text-white/60 max-w-2xl font-medium">The founders leading the charge across the spectrum of freedom tech.</p>
+              <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Portfolio</h2>
+              <p className="text-lg text-white/50 max-w-xl">The founders leading the charge across the spectrum of freedom tech.</p>
             </div>
-            <div className="flex items-center space-x-2 text-sm font-bold tracking-[0.2em] uppercase text-white/50 border-b border-white/20 pb-2">
-              <span>{PORTFOLIO.length} Active Investments</span>
-            </div>
+            <p className="text-xs tracking-widest uppercase text-white/30">{PORTFOLIO.length} Companies</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-0">
             {PORTFOLIO.map((item, i) => (
-              <a 
-                key={i} 
-                href={item.link} 
-                target="_blank" 
+              <a
+                key={i}
+                href={item.link}
+                target="_blank"
                 rel="noreferrer"
-                className="group border-t border-white/10 pt-6 hover:border-white/50 transition-colors block"
+                className="group py-6 border-b border-white/10 hover:border-white/30 transition-colors flex items-center justify-between"
               >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-2xl font-heading font-bold group-hover:text-white transition-colors">{item.name}</h3>
-                  <ArrowRight className="w-5 h-5 text-white/0 group-hover:text-white transform -translate-x-4 group-hover:translate-x-0 transition-all" />
+                <div>
+                  <h3 className="text-base font-heading font-bold group-hover:text-white transition-colors">{item.name}</h3>
+                  <p className="text-xs text-white/30 mt-0.5">{item.category}</p>
                 </div>
-                <p className="text-xs font-bold tracking-[0.1em] uppercase text-white/40 mb-3">{item.category}</p>
-                <p className="text-sm text-white/60 leading-relaxed font-medium">{item.desc}</p>
+                <ArrowRight className="w-4 h-4 text-white/0 group-hover:text-white/60 transition-colors shrink-0 ml-4" />
               </a>
             ))}
           </div>
@@ -196,19 +206,19 @@ const Index = () => {
       </section>
 
       {/* Team CTA */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
-        <div className="container mx-auto px-6 relative z-10 text-center max-w-4xl">
-          <h2 className="text-5xl md:text-7xl font-heading font-bold tracking-tighter mb-8">PIONEERED BY<br />VETERANS.</h2>
-          <p className="text-xl text-white/60 leading-relaxed font-medium mb-12 max-w-2xl mx-auto">
+      <section className="py-28 px-6 border-t border-white/10">
+        <div className="container mx-auto max-w-6xl text-center">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-6">Pioneered by Veterans</h2>
+          <p className="text-lg text-white/50 max-w-xl mx-auto mb-10">
             Led by experts with decades of experience in private equity, venture capital, and deep roots in the bitcoin ecosystem since 2013.
           </p>
-          <Button size="lg" className="bg-white text-black hover:bg-white/90 rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all hover:scale-105 inline-flex items-center space-x-2" asChild>
-            <Link to="/team">
-              <span>MEET THE TEAM</span>
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Link>
-          </Button>
+          <Link
+            to="/team"
+            className="inline-flex items-center h-12 px-7 text-sm font-medium tracking-wide bg-white text-black hover:bg-white/90 transition-colors"
+          >
+            Meet the Team
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Link>
         </div>
       </section>
 
