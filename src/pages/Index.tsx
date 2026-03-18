@@ -42,12 +42,12 @@ const PORTFOLIO = [
 const Index = () => {
   useSeoMeta({
     title: 'TEN31 | The World\'s Leading Bitcoin Technology Investor',
-    description: 'Ten31 is the leading investor and partner of choice to companies building technology and infrastructure for the bitcoin ecosystem and freedom-oriented technologies.',
+    description: 'Investors in freedom tech',
     ogTitle: 'TEN31 | The World\'s Leading Bitcoin Technology Investor',
-    ogDescription: 'Ten31 directs capital toward building the new front of freedom tech, investing in critical bitcoin infrastructure and open-source software that fortifies American resilience.',
-    ogImage: 'https://images.squarespace-cdn.com/content/v1/67e16781f37fad2f91936c8d/b604fd76-6941-4344-8e22-44a61e44b5fc/The+Global+Capital+Circuit.jpg',
+    ogDescription: 'Investors in freedom tech',
+    ogImage: 'https://www.ten31.xyz/og-image.jpg', 
     twitterCard: 'summary_large_image',
-    twitterImage: 'https://images.squarespace-cdn.com/content/v1/67e16781f37fad2f91936c8d/b604fd76-6941-4344-8e22-44a61e44b5fc/The+Global+Capital+Circuit.jpg',
+    twitterImage: 'https://www.ten31.xyz/og-image.jpg',
   });
 
   return (
