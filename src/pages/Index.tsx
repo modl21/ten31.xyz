@@ -79,6 +79,9 @@ const Index = () => {
             <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white hover:text-black rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all" asChild>
               <Link to="/funds">EXPLORE FUNDS</Link>
             </Button>
+            <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white hover:text-black rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all" asChild>
+              <a href="https://www.ten31timestamp.com" target="_blank" rel="noreferrer">NEWSLETTER</a>
+            </Button>
           </div>
         </div>
       </section>

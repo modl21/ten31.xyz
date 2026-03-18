@@ -17,7 +17,7 @@ export const Header = () => {
 
   const navLinks = [
     { name: "Portfolio", href: "/#portfolio" },
-    { name: "Thesis", href: "/#thesis" },
+    { name: "Blog", href: "/insights" },
     { name: "Team", href: "/team" },
     { name: "Funds", href: "/funds" },
     { name: "Invest", href: "/invest" },
@@ -48,6 +48,14 @@ export const Header = () => {
               {link.name}
             </Link>
           ))}
+          <a 
+            href="https://www.ten31timestamp.com" 
+            target="_blank" 
+            rel="noreferrer"
+            className="bg-white text-black hover:bg-white/90 rounded-none h-9 px-6 text-xs font-bold tracking-[0.1em] flex items-center justify-center transition-all hover:scale-105"
+          >
+            NEWSLETTER
+          </a>
         </nav>
 
         {/* Mobile menu trigger */}
