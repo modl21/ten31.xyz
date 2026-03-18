@@ -52,12 +52,12 @@ const Index = () => {
         <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
           <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-heading font-bold leading-[1.05] tracking-tight mb-6 md:mb-8">
             <span className="md:hidden">Leading investor in bitcoin and freedom tech.</span>
-            <span className="hidden md:inline">The world's leading investor<br className="hidden lg:inline" /> in bitcoin infrastructure<br className="hidden lg:inline" /> and freedom technology.</span>
+            <span className="hidden md:inline">The world's leading investor<br className="hidden lg:inline" /> in freedom technology.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-white/50 max-w-2xl leading-relaxed mb-8 md:mb-12">
             <span className="md:hidden">$250M+ deployed across 30+ companies since 2013.</span>
-            <span className="hidden md:inline">Since 2013, we have deployed over $250M across 30+ companies building foundational technologies for the financial and informational infrastructure of the future.</span>
+            <span className="hidden md:inline">Since 2020, we have deployed over $250M across 30+ companies building foundational technologies for the financial infrastructure of the future.</span>
           </p>
 
           <div className="flex flex-wrap gap-4">
