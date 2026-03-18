@@ -214,7 +214,7 @@ const Index = () => {
       {/* Team CTA */}
       <section className="py-28 px-6 border-t border-white/10">
         <div className="container mx-auto max-w-6xl text-center">
-          <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-6">Pioneered by Veterans</h2>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-6">Pioneered by Industry Vets</h2>
           <p className="text-lg text-white/50 max-w-xl mx-auto mb-10">
             <span className="md:hidden">Decades of experience in PE, VC, and bitcoin since 2013.</span>
             <span className="hidden md:inline">Led by experts with decades of experience in private equity, venture capital, and deep roots in the bitcoin ecosystem since 2013.</span>
