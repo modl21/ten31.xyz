@@ -51,11 +51,13 @@ const Index = () => {
       <section className="min-h-[100vh] flex flex-col justify-center px-6 pt-20">
         <div className="container mx-auto max-w-6xl">
           <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-heading font-bold leading-[1.05] tracking-tight mb-8">
-            The world's leading investor<br className="hidden lg:block" /> in bitcoin infrastructure<br className="hidden lg:block" /> and freedom technology.
+            <span className="md:hidden">Leading investor in bitcoin and freedom tech.</span>
+            <span className="hidden md:inline">The world's leading investor<br className="hidden lg:inline" /> in bitcoin infrastructure<br className="hidden lg:inline" /> and freedom technology.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-white/50 max-w-2xl leading-relaxed mb-12">
-            Since 2013, we have deployed over $250M across 30+ companies building foundational technologies for the financial and informational infrastructure of the future.
+            <span className="md:hidden">$250M+ deployed across 30+ companies since 2013.</span>
+            <span className="hidden md:inline">Since 2013, we have deployed over $250M across 30+ companies building foundational technologies for the financial and informational infrastructure of the future.</span>
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -120,7 +122,8 @@ const Index = () => {
               </div>
               <h3 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Strike</h3>
               <p className="text-white/50 leading-relaxed max-w-md">
-                The leading bitcoin and lightning financial services platform. TEN31 is the largest investor in Strike, reflecting our deep conviction in the company's mission to build the future of payments.
+                <span className="md:hidden">Bitcoin and lightning financial services. TEN31 is Strike's largest investor.</span>
+                <span className="hidden md:inline">The leading bitcoin and lightning financial services platform. TEN31 is the largest investor in Strike, reflecting our deep conviction in the company's mission to build the future of payments.</span>
               </p>
             </a>
 
@@ -137,7 +140,8 @@ const Index = () => {
               </div>
               <h3 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Giga Energy</h3>
               <p className="text-white/50 leading-relaxed max-w-md">
-                Texas-based natural gas bitcoin mining infrastructure provider. TEN31 was the first institutional investor in Giga, backing the company from its earliest days.
+                <span className="md:hidden">Natural gas bitcoin mining infrastructure. TEN31 was Giga's first investor.</span>
+                <span className="hidden md:inline">Texas-based natural gas bitcoin mining infrastructure provider. TEN31 was the first institutional investor in Giga, backing the company from its earliest days.</span>
               </p>
             </a>
           </div>
@@ -153,7 +157,8 @@ const Index = () => {
                 Investment Thesis
               </h2>
               <p className="text-lg text-white/50 leading-relaxed mb-12">
-                We partner with next-generation companies building foundational technologies for the financial and informational infrastructure of the future. Our portfolio sits at the intersection of powerful secular trends, backing enterprises that secure sovereignty through energy resilience, decentralized systems, and uncompromising financial architecture.
+                <span className="md:hidden">Backing companies at the intersection of bitcoin, energy, decentralized systems, and open financial architecture.</span>
+                <span className="hidden md:inline">We partner with next-generation companies building foundational technologies for the financial and informational infrastructure of the future. Our portfolio sits at the intersection of powerful secular trends, backing enterprises that secure sovereignty through energy resilience, decentralized systems, and uncompromising financial architecture.</span>
               </p>
             </div>
 
@@ -180,7 +185,10 @@ const Index = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div>
               <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Portfolio</h2>
-              <p className="text-lg text-white/50 max-w-xl">The founders leading the charge across the spectrum of freedom tech.</p>
+              <p className="text-lg text-white/50 max-w-xl">
+                <span className="md:hidden">30+ companies across freedom tech.</span>
+                <span className="hidden md:inline">The founders leading the charge across the spectrum of freedom tech.</span>
+              </p>
             </div>
             <p className="text-xs tracking-widest uppercase text-white/30">{PORTFOLIO.length} Companies</p>
           </div>
@@ -210,7 +218,8 @@ const Index = () => {
         <div className="container mx-auto max-w-6xl text-center">
           <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-6">Pioneered by Veterans</h2>
           <p className="text-lg text-white/50 max-w-xl mx-auto mb-10">
-            Led by experts with decades of experience in private equity, venture capital, and deep roots in the bitcoin ecosystem since 2013.
+            <span className="md:hidden">Decades of experience in PE, VC, and bitcoin since 2013.</span>
+            <span className="hidden md:inline">Led by experts with decades of experience in private equity, venture capital, and deep roots in the bitcoin ecosystem since 2013.</span>
           </p>
           <Link
             to="/team"
