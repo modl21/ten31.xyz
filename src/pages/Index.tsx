@@ -154,22 +154,19 @@ const Index = () => {
               <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-8">
                 Investment Thesis
               </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed font-serif">
-                <span className="md:hidden">Backing companies at the intersection of bitcoin, energy, decentralized systems, and open financial architecture.</span>
-                <span className="hidden md:inline">We partner with next-generation companies building foundational technologies for the financial and informational infrastructure of the future. Our portfolio sits at the intersection of powerful secular trends, backing enterprises that secure sovereignty through energy resilience, decentralized systems, and uncompromising financial architecture.</span>
+              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed font-serif">
+                We believe freedom scales through profitable business.
               </p>
             </div>
 
             <div className="space-y-0 border-t border-border lg:border-t-0 lg:border-l lg:border-border lg:pl-16 xl:pl-20 pt-8 lg:pt-0">
               {[
-                { title: 'Bitcoin Native', desc: 'Trading, payments, custody, security, and computing infrastructure.' },
-                { title: 'Open Source Software', desc: 'The proliferation and virality of decentralized, permissionless code.' },
-                { title: 'Nostr & Communications', desc: 'New communications and media applications catalyzed by the nostr ecosystem.' },
-                { title: 'Artificial Intelligence', desc: 'Unprecedented productivity improvements progressively converging with bitcoin.' },
+                { title: 'Bitcoin Native' },
+                { title: 'Open Source Software' },
+                { title: 'Artificial Intelligence' },
               ].map((item, i) => (
                 <div key={i} className="py-5 border-b border-border last:border-b-0">
-                  <h3 className="text-lg font-heading font-bold mb-1">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed font-serif">{item.desc}</p>
+                  <h3 className="text-lg font-heading font-bold">{item.title}</h3>
                 </div>
               ))}
             </div>
