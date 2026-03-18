@@ -7,7 +7,6 @@ import { ExternalLink, Mail, Map, Users } from 'lucide-react';
 export const Invest = () => {
   useSeoMeta({
     title: 'Invest | TEN31',
-    description: 'Explore Bitcoin Investment Opportunities with Ten31. We deploy capital into critical bitcoin infrastructure.',
   });
 
   return (

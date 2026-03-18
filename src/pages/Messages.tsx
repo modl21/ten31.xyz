@@ -3,8 +3,7 @@ import { DMMessagingInterface } from '@/components/dm/DMMessagingInterface';
 
 const Messages = () => {
   useSeoMeta({
-    title: 'Messages',
-    description: 'Private encrypted messaging on Nostr',
+    title: 'Messages | TEN31',
   });
 
   return (

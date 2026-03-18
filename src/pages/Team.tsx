@@ -50,7 +50,6 @@ const TEAM = [
 export const Team = () => {
   useSeoMeta({
     title: 'Team | TEN31',
-    description: 'Meet the team behind Ten31, experts in private equity and venture capital dedicated to bitcoin and freedom tech.',
   });
 
   return (

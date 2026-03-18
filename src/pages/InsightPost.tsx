@@ -15,7 +15,6 @@ export const InsightPost = () => {
 
   useSeoMeta({
     title: `${post.title} | TEN31`,
-    description: post.excerpt,
   });
 
   return (

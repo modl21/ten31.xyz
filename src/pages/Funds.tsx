@@ -7,7 +7,6 @@ import { ExternalLink, ShieldAlert, Activity, GitBranch } from 'lucide-react';
 export const Funds = () => {
   useSeoMeta({
     title: 'Funds | TEN31',
-    description: 'Our funds aim to provide investors with diversified exposure across all verticals of the bitcoin ecosystem.',
   });
 
   return (

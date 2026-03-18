@@ -41,13 +41,7 @@ const PORTFOLIO = [
 
 const Index = () => {
   useSeoMeta({
-    title: 'TEN31 | The World\'s Leading Bitcoin Technology Investor',
-    description: 'Investors in freedom tech',
-    ogTitle: 'TEN31 | The World\'s Leading Bitcoin Technology Investor',
-    ogDescription: 'Investors in freedom tech',
-    ogImage: 'https://bullsats.com/og-image.jpg', 
-    twitterCard: 'summary_large_image',
-    twitterImage: 'https://bullsats.com/og-image.jpg',
+    title: 'TEN31 | Investors in Freedom Tech',
   });
 
   return (

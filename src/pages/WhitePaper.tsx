@@ -7,7 +7,6 @@ import { Download, FileText } from 'lucide-react';
 export const WhitePaper = () => {
   useSeoMeta({
     title: 'White Paper | TEN31',
-    description: 'Read the Ten31 White Paper on Bitcoin, Freedom Tech, and Generational Secular Tailwinds.',
   });
 
   return (

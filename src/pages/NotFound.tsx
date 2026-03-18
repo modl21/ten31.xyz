@@ -10,8 +10,7 @@ const NotFound = () => {
   const location = useLocation();
 
   useSeoMeta({
-    title: "404 Not Found | TEN31",
-    description: "The page you are looking for could not be found.",
+    title: "404 - Page Not Found | TEN31",
   });
 
   useEffect(() => {

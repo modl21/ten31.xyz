@@ -8,7 +8,6 @@ import { ChevronRight } from 'lucide-react';
 export const Insights = () => {
   useSeoMeta({
     title: 'Insights | TEN31',
-    description: 'Read the latest essays, research, and insights on bitcoin and freedom technology from the Ten31 team.',
   });
 
   return (
