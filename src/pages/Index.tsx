@@ -47,15 +47,15 @@ const Index = () => {
     <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
       <Header />
 
-      {/* Hero Section — extreme minimalism */}
-      <section className="min-h-[100vh] flex flex-col justify-center px-6 pt-20">
-        <div className="container mx-auto max-w-6xl">
-          <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-heading font-bold leading-[1.05] tracking-tight mb-8">
+      {/* Hero Section — everything above the fold */}
+      <section className="min-h-[100vh] flex flex-col justify-between px-6 pt-24 pb-12 md:pt-28 md:pb-16">
+        <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
+          <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-heading font-bold leading-[1.05] tracking-tight mb-6 md:mb-8">
             <span className="md:hidden">Leading investor in bitcoin and freedom tech.</span>
             <span className="hidden md:inline">The world's leading investor<br className="hidden lg:inline" /> in bitcoin infrastructure<br className="hidden lg:inline" /> and freedom technology.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-white/50 max-w-2xl leading-relaxed mb-12">
+          <p className="text-lg md:text-xl text-white/50 max-w-2xl leading-relaxed mb-8 md:mb-12">
             <span className="md:hidden">$250M+ deployed across 30+ companies since 2013.</span>
             <span className="hidden md:inline">Since 2013, we have deployed over $250M across 30+ companies building foundational technologies for the financial and informational infrastructure of the future.</span>
           </p>
@@ -84,11 +84,9 @@ const Index = () => {
             </a>
           </div>
         </div>
-      </section>
 
-      {/* Key stats — understated horizontal bar */}
-      <section className="border-y border-white/10">
-        <div className="container mx-auto max-w-6xl px-6 py-16 grid grid-cols-2 lg:grid-cols-4 gap-12">
+        {/* Stats pinned to bottom of viewport */}
+        <div className="container mx-auto max-w-6xl pt-10 md:pt-12 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12">
           {[
             { value: '$250M+', label: 'Capital Deployed' },
             { value: '30+', label: 'Portfolio Companies' },
@@ -96,8 +94,8 @@ const Index = () => {
             { value: '2013', label: 'Year Established' },
           ].map((stat) => (
             <div key={stat.label}>
-              <p className="text-3xl md:text-4xl font-heading font-bold tracking-tight mb-1">{stat.value}</p>
-              <p className="text-xs tracking-widest uppercase text-white/40">{stat.label}</p>
+              <p className="text-2xl md:text-4xl font-heading font-bold tracking-tight mb-1">{stat.value}</p>
+              <p className="text-[10px] md:text-xs tracking-widest uppercase text-white/40">{stat.label}</p>
             </div>
           ))}
         </div>
