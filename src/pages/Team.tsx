@@ -7,18 +7,18 @@ const TEAM = [
     name: "Grant Gilliam",
     role: "Co-founder and Managing Partner",
     bio: "20 years investing professionally in private equity and venture capital. Expertise in sourcing, evaluating, executing and managing investments. Board member: Strike. Previously: CVC Capital Partners.",
-    image: "/team/team2.webp"
+    image: "https://images.squarespace-cdn.com/content/v1/67e16781f37fad2f91936c8d/1742825361982-MXMYYNORE8XHK9IV0ZWR/GRANTGILLIAM.jpg"
   },
   {
     name: "Jonathan Kirkwood",
     role: "Co-founder and Managing Partner",
     bio: "MD MBA. Expertise in business development, business and capital formation, and investment/fund management. Board member: Start9 Labs, Battery.",
-    image: "/team/team1.webp"
+    image: "https://images.squarespace-cdn.com/content/v1/67e16781f37fad2f91936c8d/1742825361986-3MNRVV6VBYXV86ROFRQR/19+Kirkwood-2022+B%26W+8x10.jpg"
   },
   {
     name: "Matt Odell",
     role: "Managing Partner",
-    bio: "Freedom Tech advocate. Host: Citadel Dispatch, Rabbit Hole Recap. Co-Founder: Open Sats, Bitcoin Park, BitcoinTV, Bitcoin Dev List, Final Message. Advisor: Bitcoin Magazine, BottlePay, Hoseki, Pleblab, BitHyve.",
+    bio: "Managing Partner at Ten31. CoFounder: OpenSats, Bitcoin Park. Founding Board: Bitcoin Policy Institute Host: Citadel Dispatch, Rabbit Hole Recap.",
     image: "https://images.squarespace-cdn.com/content/v1/67e16781f37fad2f91936c8d/1742825361989-4DU0RYHF58C7QG4JFOJJ/odellprofile.jpg"
   },
   {
@@ -43,7 +43,7 @@ const TEAM = [
     name: "Elaine Ou",
     role: "Advisor",
     bio: "Consultant at Global Financial Access. Editor at BTC Times. Columnist at Bloomberg. Previously: Sand Hill Exchange, Abra.",
-    image: "/team/team3.webp"
+    image: "https://images.squarespace-cdn.com/content/v1/67e16781f37fad2f91936c8d/1742825362018-LUHO9KCA0SYX79TFKD9F/elaine.jpg"
   }
 ];
 
