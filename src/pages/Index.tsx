@@ -43,6 +43,11 @@ const Index = () => {
   useSeoMeta({
     title: 'TEN31 | The World\'s Leading Bitcoin Technology Investor',
     description: 'Ten31 is the leading investor and partner of choice to companies building technology and infrastructure for the bitcoin ecosystem and freedom-oriented technologies.',
+    ogTitle: 'TEN31 | The World\'s Leading Bitcoin Technology Investor',
+    ogDescription: 'Ten31 directs capital toward building the new front of freedom tech, investing in critical bitcoin infrastructure and open-source software that fortifies American resilience.',
+    ogImage: 'https://images.squarespace-cdn.com/content/v1/67e16781f37fad2f91936c8d/b604fd76-6941-4344-8e22-44a61e44b5fc/The+Global+Capital+Circuit.jpg',
+    twitterCard: 'summary_large_image',
+    twitterImage: 'https://images.squarespace-cdn.com/content/v1/67e16781f37fad2f91936c8d/b604fd76-6941-4344-8e22-44a61e44b5fc/The+Global+Capital+Circuit.jpg',
   });
 
   return (
@@ -72,14 +77,14 @@ const Index = () => {
             The world's leading investor in bitcoin infrastructure, open-source software, and freedom technology.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-6">
-            <Button size="lg" className="bg-white text-black hover:bg-white/90 rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all hover:scale-105" asChild>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <Button size="lg" variant="outline" className="border-white/20 bg-black text-white hover:bg-white/10 rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all hover:scale-105" asChild>
               <a href="#portfolio">VIEW PORTFOLIO</a>
             </Button>
-            <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white hover:text-black rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all" asChild>
+            <Button size="lg" className="bg-white text-black hover:bg-white/90 rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all" asChild>
               <Link to="/funds">EXPLORE FUNDS</Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white hover:text-black rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all" asChild>
+            <Button size="lg" variant="outline" className="border-white/20 bg-black text-white hover:bg-white/10 rounded-none h-14 px-8 text-sm font-bold tracking-[0.1em] transition-all" asChild>
               <a href="https://www.ten31timestamp.com" target="_blank" rel="noreferrer">NEWSLETTER</a>
             </Button>
           </div>
@@ -117,7 +122,7 @@ const Index = () => {
             <div>
               <h2 className="text-5xl md:text-7xl font-heading font-bold tracking-tighter mb-8 leading-tight">GENERATIONAL<br /><span className="text-white/40">TAILWINDS.</span></h2>
               <p className="text-xl text-white/60 leading-relaxed font-medium mb-12">
-                We partner with next-generation companies building foundational technologies for the financial and informational infrastructure of the future. Our portfolio sits at the intersection of powerful secular trends.
+                We partner with next-generation companies building foundational technologies for the financial and informational infrastructure of the future. Our portfolio sits at the intersection of powerful secular trends, backing enterprises that secure American sovereignty through energy resilience, decentralized systems, and uncompromising financial architecture.
               </p>
               
               <div className="space-y-8">
