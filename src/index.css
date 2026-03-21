@@ -4,40 +4,57 @@
 
 @layer base {
   :root {
-    --background: 40 20% 98%;
-    --foreground: 220 20% 10%;
+    --background: 224 39% 7%;
+    --foreground: 210 40% 98%;
 
-    --card: 40 15% 96%;
-    --card-foreground: 220 20% 10%;
+    --card: 222 34% 10%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 40 20% 98%;
-    --popover-foreground: 220 20% 10%;
+    --popover: 222 34% 10%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 220 20% 10%;
-    --primary-foreground: 40 20% 98%;
+    --primary: 191 97% 63%;
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 40 10% 93%;
-    --secondary-foreground: 220 20% 10%;
+    --secondary: 218 28% 16%;
+    --secondary-foreground: 210 40% 96%;
 
-    --muted: 40 10% 93%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 220 24% 15%;
+    --muted-foreground: 217 18% 72%;
 
-    --accent: 40 10% 93%;
-    --accent-foreground: 220 20% 10%;
+    --accent: 28 92% 58%;
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 40 20% 98%;
+    --destructive: 0 72% 54%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 40 10% 88%;
-    --input: 40 10% 88%;
-    --ring: 220 10% 45%;
+    --border: 217 28% 18%;
+    --input: 217 28% 18%;
+    --ring: 191 97% 63%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
   }
 
   .dark {
-    --background: 220 20% 10%;
-    --foreground: 40 20% 98%;
+    --background: 224 39% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 34% 10%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 34% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 191 97% 63%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 218 28% 16%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 220 24% 15%;
+    --muted-foreground: 217 18% 72%;
+    --accent: 28 92% 58%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 72% 54%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217 28% 18%;
+    --input: 217 28% 18%;
+    --ring: 191 97% 63%;
   }
 }
 
@@ -46,12 +63,35 @@
     @apply border-border;
   }
 
+  html {
+    color-scheme: dark;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    background-image:
+      radial-gradient(circle at top, rgba(34, 211, 238, 0.08), transparent 28%),
+      radial-gradient(circle at 80% 10%, rgba(251, 146, 60, 0.1), transparent 26%),
+      linear-gradient(180deg, rgba(4, 8, 16, 1), rgba(7, 12, 20, 1));
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  .game-panel {
+    @apply rounded-[28px] border border-white/10 bg-white/[0.045] shadow-[0_12px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl;
+  }
+
+  .game-grid {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, rgba(255,255,255,0.32), transparent 78%);
   }
 }
 
@@ -62,4 +102,17 @@
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
 }
