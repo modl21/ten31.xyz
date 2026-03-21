@@ -236,18 +236,17 @@ const Index = () => {
   const currentCompany = useMemo(() => {
     if (!isAllocatingPhase || gameOver) return null;
     const allocatingPhaseIndex = Math.floor(currentPhase / 2);
-    const startIndex = allocatingPhaseIndex * PHASE_LENGTH;
-    const phaseIndex = round - startIndex;
-    if (phaseIndex < 0 || phaseIndex >= PHASE_LENGTH) return null;
-    return dealFlow[phaseIndex % dealFlow.length];
+    const allocatingPhaseRound = round - (allocatingPhaseIndex * PHASE_LENGTH);
+    if (allocatingPhaseRound < 0 || allocatingPhaseRound >= PHASE_LENGTH) return null;
+    return dealFlow[allocatingPhaseRound % dealFlow.length];
   }, [round, isAllocatingPhase, currentPhase, gameOver, dealFlow]);
 
   // Get current raise event
   const currentRaiseEvent = useMemo(() => {
-    if (!currentGamePhase || gameOver) return null;
-    const raisingPhaseIndex = Math.floor((currentPhase + 1) / 2);
+    if (isAllocatingPhase || gameOver) return null;
+    const raisingPhaseIndex = Math.floor(currentPhase / 2);
     return raiseEvents[raisingPhaseIndex % raiseEvents.length];
-  }, [currentPhase, currentGamePhase, gameOver, raiseEvents]);
+  }, [currentPhase, isAllocatingPhase, gameOver, raiseEvents]);
 
   // Get available investor pitches
   const availablePitches = useMemo(() => {
@@ -363,7 +362,9 @@ const Index = () => {
           : 'You passed and preserved capital. Sometimes not losing is the edge.';
     }
 
-    const nextEvent = marketEvents[round];
+    const allocatingPhaseIndex = Math.floor(round / PHASE_LENGTH / 2);
+    const allocatingPhaseRound = round - (allocatingPhaseIndex * PHASE_LENGTH);
+    const nextEvent = marketEvents[allocatingPhaseRound % marketEvents.length];
     const updatedMomentum: Momentum = {
       ...momentum,
       global: clamp(momentum.global + nextEvent.globalShift, -1.5, 1.5),
