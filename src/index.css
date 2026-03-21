@@ -83,7 +83,7 @@
 
 @layer components {
   .game-panel {
-    @apply rounded-[28px] border border-white/10 bg-white/[0.045] shadow-[0_12px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl;
+    @apply rounded-[28px] border border-white/10 bg-white/[0.045] shadow-[0_12px_50px_rgba(0_0_0_/_0.28)] backdrop-blur-xl;
   }
 
   .game-grid {

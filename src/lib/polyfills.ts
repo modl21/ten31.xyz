@@ -20,7 +20,7 @@ if (!globalThis.Buffer) {
  */
 
 // Check if AbortSignal.any is already available
-if (!AbortSignal.any) {
+if (typeof AbortSignal !== 'undefined' && !AbortSignal.any) {
   AbortSignal.any = function(signals: AbortSignal[]): AbortSignal {
     // If no signals provided, return a signal that never aborts
     if (signals.length === 0) {
@@ -76,14 +76,23 @@ if (!AbortSignal.any) {
  * @see https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static
  */
 
-// Check if AbortSignal.timeout is already available
-if (!AbortSignal.timeout) {
+// Check if AbortSignal.timeout is already available and AbortSignal exists
+if (typeof AbortSignal !== 'undefined' && !AbortSignal.timeout) {
   AbortSignal.timeout = function(milliseconds: number): AbortSignal {
     const controller = new AbortController();
     
-    setTimeout(() => {
-      controller.abort(new DOMException('The operation was aborted due to timeout', 'TimeoutError'));
+    const timeoutId = setTimeout(() => {
+      try {
+        controller.abort(new DOMException('The operation was aborted due to timeout', 'TimeoutError'));
+      } catch {
+        // Ignore abort errors
+      }
     }, milliseconds);
+    
+    // Clean up timeout if signal is already aborted
+    controller.signal.addEventListener('abort', () => {
+      clearTimeout(timeoutId);
+    }, { once: true });
     
     return controller.signal;
   };
