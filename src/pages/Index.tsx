@@ -195,7 +195,7 @@ const MetricBar = ({ label, value, tone = 'good' }: { label: string; value: numb
 
 const Index = () => {
   useSeoMeta({
-    title: 'TEN31 Investor Mode | Fund the Future',
+    title: 'TEN31 | THE GAME',
     description: 'A playable investor simulation where you build a portfolio of the next great companies.',
   });
 
