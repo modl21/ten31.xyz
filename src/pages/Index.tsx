@@ -733,9 +733,14 @@ const Index = () => {
                   <h2 className="mt-3 text-4xl font-semibold text-white sm:text-6xl">Preparing to raise</h2>
                   <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/68">The next phase begins. Time to convince LPs that your portfolio deserves more capital.</p>
                 </div>
-                <div className="rounded-full bg-gradient-to-r from-cyan-400/20 to-orange-400/20 px-5 py-2 text-sm font-medium text-cyan-100">
+                <button
+                  type="button"
+                  onClick={() => setRound((current) => current + 1)}
+                  className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-cyan-400/20 to-orange-400/20 px-6 py-3 text-sm font-medium uppercase tracking-[0.2em] text-cyan-100 transition hover:from-cyan-400/30 hover:to-orange-400/30 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
+                >
                   Next: Fundraising Phase
-                </div>
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </button>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -988,9 +993,14 @@ const Index = () => {
                   <h2 className="mt-3 text-4xl font-semibold text-white sm:text-6xl">Ready to deploy</h2>
                   <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/68">The next allocation phase begins. Your fund has grown. Time to back the next generation of founders.</p>
                 </div>
-                <div className="rounded-full bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-5 py-2 text-sm font-medium text-orange-100">
+                <button
+                  type="button"
+                  onClick={() => setRound((current) => current + 1)}
+                  className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-6 py-3 text-sm font-medium uppercase tracking-[0.2em] text-orange-100 transition hover:from-orange-400/30 hover:to-cyan-400/30 hover:shadow-[0_0_30px_rgba(251,146,60,0.2)]"
+                >
                   Next: Allocation Phase
-                </div>
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </button>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
