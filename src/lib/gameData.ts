@@ -397,3 +397,240 @@ export const sectorAccent: Record<Sector, string> = {
   Climate: 'from-lime-500/25 via-green-500/20 to-transparent text-lime-100 border-lime-400/30',
   Biotech: 'from-pink-500/25 via-purple-500/20 to-transparent text-pink-100 border-pink-400/30',
 };
+
+// Fundraising event types
+export type RaiseEvent = {
+  id: string;
+  title: string;
+  description: string;
+  tone: 'bull' | 'bear' | 'neutral';
+  difficulty: number; // 1-10, affects investor persuasion threshold
+  investorPool: number; // Base number of potential investors this quarter
+  convictionBonus: number; // Reputation bonus if you exceed the target
+};
+
+export type RaiseResult = {
+  success: boolean;
+  amount: number;
+  note: string;
+  investorSatisfaction: number;
+};
+
+export const RAISE_EVENTS: RaiseEvent[] = [
+  {
+    id: 'lp-summit',
+    title: 'LP Summit Season',
+    description: 'Major LPs gather in a mountain resort. The conversations happen over whiskey and golf. Your reputation opens doors—or closes them.',
+    tone: 'neutral',
+    difficulty: 3,
+    investorPool: 8,
+    convictionBonus: 3,
+  },
+  {
+    id: 'portfolio-showcase',
+    title: 'Portfolio Showcase',
+    description: 'Portfolio companies present at ademo day. Winners get second checks. The duds get quietly dropped from future invites.',
+    tone: 'bull',
+    difficulty: 4,
+    investorPool: 12,
+    convictionBonus: 5,
+  },
+  {
+    id: 'market-turbulence',
+    title: 'Market Turbulence',
+    description: 'Public markets are volatile. LPs are nervous. The ones with conviction write checks. The rest go dark until things stabilize.',
+    tone: 'bear',
+    difficulty: 7,
+    investorPool: 5,
+    convictionBonus: 2,
+  },
+  {
+    id: 'conference-circuit',
+    title: 'Conference Circuit',
+    description: 'A packed week of panels, coffees, and awkward introductions. Everyone is pitching everyone. Filter for signal.',
+    tone: 'neutral',
+    difficulty: 5,
+    investorPool: 15,
+    convictionBonus: 4,
+  },
+  {
+    id: 'term-sheet-war',
+    title: 'Term Sheet War',
+    description: 'Multiple funds circling the same LP base. It is a competition for conviction. Only the sharpest pitches close.',
+    tone: 'bear',
+    difficulty: 8,
+    investorPool: 6,
+    convictionBonus: 6,
+  },
+  {
+    id: 'portfolio-appreciation',
+    title: 'Portfolio Appreciation',
+    description: 'Your best companies are hitting milestones. Press mentions pile up. LPs who passed last time are suddenly available.',
+    tone: 'bull',
+    difficulty: 2,
+    investorPool: 10,
+    convictionBonus: 4,
+  },
+  {
+    id: 'regulatory-shift',
+    title: 'Regulatory Shift',
+    description: 'New rules are reshaping the industry. Some LPs are paralyzed. Others see opportunity. Navigate the noise.',
+    tone: 'neutral',
+    difficulty: 6,
+    investorPool: 7,
+    convictionBonus: 3,
+  },
+  {
+    id: 'breakthrough-announcement',
+    title: 'Portfolio Breakthrough',
+    description: 'A portfolio company announces a major breakthrough. The press cycle is brutal. LPs are watching how you handle the spotlight.',
+    tone: 'bull',
+    difficulty: 3,
+    investorPool: 14,
+    convictionBonus: 7,
+  },
+  {
+    id: 'founder-referrals',
+    title: 'Founder Referral Network',
+    description: 'Founders you backed are now vouching for you. Warm intros flow like water. The quality of your portfolio is showing.',
+    tone: 'bull',
+    difficulty: 2,
+    investorPool: 18,
+    convictionBonus: 5,
+  },
+  {
+    id: 'fund-cycle-fatigue',
+    title: 'Fund Cycle Fatigue',
+    description: 'LPs have been pitched 40 times this quarter. Attention is scarce. You need something memorable to break through.',
+    tone: 'bear',
+    difficulty: 9,
+    investorPool: 4,
+    convictionBonus: 4,
+  },
+  {
+    id: 'cohort-analysis',
+    title: 'Cohort Analysis Season',
+    description: 'LP teams are running the numbers on their portfolios. The data speaks. Either you are in the top quartile or you are fighting for survival.',
+    tone: 'neutral',
+    difficulty: 5,
+    investorPool: 9,
+    convictionBonus: 6,
+  },
+  {
+    id: 'emerging-manager-wave',
+    title: 'Emerging Manager Wave',
+    description: 'A new generation of LPs is looking for the next Sequoia. Bet on the underdog or bet on track record. Choose wisely.',
+    tone: 'bull',
+    difficulty: 4,
+    investorPool: 20,
+    convictionBonus: 5,
+  },
+];
+
+export type InvestorPitch = {
+  id: string;
+  title: string;
+  description: string;
+  riskLevel: 'safe' | 'balanced' | 'aggressive';
+  potentialRaise: number;
+  convictionRequired: number;
+};
+
+export const INVESTOR_PITCHES: InvestorPitch[] = [
+  {
+    id: 'anchor-lp',
+    title: 'Anchor LP Commitment',
+    description: 'A family office wants to anchor your fund at a favorable valuation. They need a personal meeting and references.',
+    riskLevel: 'safe',
+    potentialRaise: 25,
+    convictionRequired: 40,
+  },
+  {
+    id: 'sovereign-wealth',
+    title: 'Sovereign Wealth Interest',
+    description: 'A state fund is exploring alternatives. Bureaucracy is brutal but the check could be transformative.',
+    riskLevel: 'balanced',
+    potentialRaise: 40,
+    convictionRequired: 60,
+  },
+  {
+    id: 'tech-executive',
+    title: 'Tech Executive Angels',
+    description: 'A group of successful founders pooling capital. They want access and board observer seats.',
+    riskLevel: 'safe',
+    potentialRaise: 15,
+    convictionRequired: 30,
+  },
+  {
+    id: 'institutional-hedge',
+    title: 'Institutional Allocation',
+    description: 'A university endowment considering a small check. Two years of relationship building before they write.',
+    riskLevel: 'balanced',
+    potentialRaise: 30,
+    convictionRequired: 55,
+  },
+  {
+    id: 'crypto-native',
+    title: 'Crypto-Native Capital',
+    description: 'On-chain money looking for alpha. Fast decisions but volatile relationships. Terms can be unusual.',
+    riskLevel: 'aggressive',
+    potentialRaise: 35,
+    convictionRequired: 45,
+  },
+  {
+    id: 'strategic-corporate',
+    title: 'Strategic Corporate',
+    description: 'A public company exploring venture exposure. They want co-investment rights and deal flow.',
+    riskLevel: 'balanced',
+    potentialRaise: 45,
+    convictionRequired: 65,
+  },
+  {
+    id: 'diaspora-network',
+    title: 'Diaspora Network',
+    description: 'A tight-knit community of entrepreneurs backing each other. High trust, moderate checks.',
+    riskLevel: 'safe',
+    potentialRaise: 20,
+    convictionRequired: 35,
+  },
+  {
+    id: 'celebrity-adjacent',
+    title: 'Entertainment Capital',
+    description: 'Someone famous wants brand association with venture returns. Flashy but complicated to manage.',
+    riskLevel: 'aggressive',
+    potentialRaise: 50,
+    convictionRequired: 70,
+  },
+  {
+    id: 'pension-fund',
+    title: 'Pension Fund Allocation',
+    description: 'A municipal pension allocating to alternatives. Multi-year commitment but glacial due diligence.',
+    riskLevel: 'safe',
+    potentialRaise: 60,
+    convictionRequired: 80,
+  },
+  {
+    id: 'family-office-circle',
+    title: 'Multi-Family Office',
+    description: 'A network of UHNW families pooling research and co-investing. Sophisticated and demanding.',
+    riskLevel: 'balanced',
+    potentialRaise: 35,
+    convictionRequired: 50,
+  },
+  {
+    id: 'growth-equity',
+    title: 'Growth Equity Crossover',
+    description: 'A PE fund exploring VC allocation. They want leverage and board control provisions.',
+    riskLevel: 'aggressive',
+    potentialRaise: 55,
+    convictionRequired: 75,
+  },
+  {
+    id: 'research-fund',
+    title: 'Academic Endowment',
+    description: 'University capital looking for innovation exposure. Long-term thinking but rigid processes.',
+    riskLevel: 'safe',
+    potentialRaise: 25,
+    convictionRequired: 45,
+  },
+];
