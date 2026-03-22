@@ -247,11 +247,14 @@ const Index = () => {
     return raiseEvents[raisingPhaseIndex % raiseEvents.length];
   }, [currentPhase, isAllocatingPhase, gameOver, raiseEvents]);
 
-  // Get available investor pitches
+  // Get available investor pitches (reset each raising phase so pitches recycle)
   const availablePitches = useMemo(() => {
-    const usedPitches = raiseAttempts.map(r => r.pitchId);
-    return investorPitches.filter(p => !usedPitches.includes(p.id)).slice(0, 4);
-  }, [raiseAttempts, investorPitches]);
+    const currentPhaseStart = currentPhase * PHASE_LENGTH;
+    const usedThisPhase = raiseAttempts
+      .filter(r => r.quarter >= currentPhaseStart && r.quarter < currentPhaseStart + PHASE_LENGTH)
+      .map(r => r.pitchId);
+    return investorPitches.filter(p => !usedThisPhase.includes(p.id)).slice(0, 4);
+  }, [raiseAttempts, investorPitches, currentPhase]);
 
   const latestEvent = eventLog[0];
   const totalRaised = useMemo(() => raiseAttempts.reduce((sum, r) => sum + (r.success ? r.amount : 0), 0), [raiseAttempts]);
