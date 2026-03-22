@@ -235,11 +235,10 @@ const Index = () => {
   // Get current company based on allocating phase
   const currentCompany = useMemo(() => {
     if (!isAllocatingPhase || gameOver) return null;
+    if (currentPhaseRound < 0 || currentPhaseRound >= PHASE_LENGTH) return null;
     const allocatingPhaseIndex = Math.floor(currentPhase / 2);
-    const allocatingPhaseRound = round - (allocatingPhaseIndex * PHASE_LENGTH);
-    if (allocatingPhaseRound < 0 || allocatingPhaseRound >= PHASE_LENGTH) return null;
-    return dealFlow[allocatingPhaseRound % dealFlow.length];
-  }, [round, isAllocatingPhase, currentPhase, gameOver, dealFlow]);
+    return dealFlow[(allocatingPhaseIndex * PHASE_LENGTH + currentPhaseRound) % dealFlow.length];
+  }, [round, isAllocatingPhase, currentPhase, currentPhaseRound, gameOver, dealFlow]);
 
   // Get current raise event
   const currentRaiseEvent = useMemo(() => {
@@ -362,9 +361,7 @@ const Index = () => {
           : 'You passed and preserved capital. Sometimes not losing is the edge.';
     }
 
-    const allocatingPhaseIndex = Math.floor(round / PHASE_LENGTH / 2);
-    const allocatingPhaseRound = round - (allocatingPhaseIndex * PHASE_LENGTH);
-    const nextEvent = marketEvents[allocatingPhaseRound % marketEvents.length];
+    const nextEvent = marketEvents[(round % PHASE_LENGTH) % marketEvents.length];
     const updatedMomentum: Momentum = {
       ...momentum,
       global: clamp(momentum.global + nextEvent.globalShift, -1.5, 1.5),
