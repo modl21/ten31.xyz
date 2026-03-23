@@ -94,40 +94,64 @@
     mask-image: linear-gradient(to bottom, rgba(255,255,255,0.32), transparent 78%);
   }
 
-  /* Text fitting safeguards for dynamic game UI */
+  /* Text fitting safeguards for dynamic game UI (prefer shrinking over wrapping) */
   .ui-text-safe,
   .ui-text-safe * {
     min-width: 0;
   }
 
-  .ui-text-safe p,
-  .ui-text-safe h1,
-  .ui-text-safe h2,
-  .ui-text-safe h3,
-  .ui-text-safe h4,
-  .ui-text-safe h5,
-  .ui-text-safe h6,
-  .ui-text-safe span,
-  .ui-text-safe td,
-  .ui-text-safe th,
-  .ui-text-safe a,
-  .ui-text-safe label {
-    overflow-wrap: anywhere;
-    word-break: break-word;
+  .ui-text-safe h1 {
+    font-size: clamp(2rem, 5.8vw, 4.75rem);
+    line-height: 1.02;
+    text-wrap: balance;
   }
 
-  .ui-text-safe button {
-    max-width: 100%;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+  .ui-text-safe h2 {
+    font-size: clamp(1.55rem, 3.2vw, 3rem);
+    line-height: 1.06;
     text-wrap: balance;
-    line-height: 1.25;
+  }
+
+  .ui-text-safe h3 {
+    font-size: clamp(1.2rem, 2.2vw, 2rem);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .ui-text-safe .text-xs { font-size: clamp(0.58rem, 0.54rem + 0.2vw, 0.72rem); }
+  .ui-text-safe .text-sm { font-size: clamp(0.68rem, 0.62rem + 0.23vw, 0.86rem); }
+  .ui-text-safe .text-base { font-size: clamp(0.76rem, 0.7rem + 0.26vw, 0.98rem); }
+  .ui-text-safe .text-lg { font-size: clamp(0.9rem, 0.84rem + 0.32vw, 1.1rem); }
+  .ui-text-safe .text-xl { font-size: clamp(1rem, 0.92rem + 0.42vw, 1.25rem); }
+  .ui-text-safe .text-2xl { font-size: clamp(1.15rem, 1.02rem + 0.62vw, 1.55rem); }
+
+  .ui-text-safe button,
+  .ui-text-safe [role='button'] {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    font-size: clamp(0.66rem, 0.58rem + 0.28vw, 0.9rem);
+  }
+
+  .ui-text-safe button * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ui-text-safe .rounded-full {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(0.56rem, 0.5rem + 0.2vw, 0.8rem);
   }
 
   .ui-text-safe input,
   .ui-text-safe textarea {
     max-width: 100%;
+    min-width: 0;
   }
 }
 
