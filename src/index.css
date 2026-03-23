@@ -93,6 +93,42 @@
     background-size: 48px 48px;
     mask-image: linear-gradient(to bottom, rgba(255,255,255,0.32), transparent 78%);
   }
+
+  /* Text fitting safeguards for dynamic game UI */
+  .ui-text-safe,
+  .ui-text-safe * {
+    min-width: 0;
+  }
+
+  .ui-text-safe p,
+  .ui-text-safe h1,
+  .ui-text-safe h2,
+  .ui-text-safe h3,
+  .ui-text-safe h4,
+  .ui-text-safe h5,
+  .ui-text-safe h6,
+  .ui-text-safe span,
+  .ui-text-safe td,
+  .ui-text-safe th,
+  .ui-text-safe a,
+  .ui-text-safe label {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .ui-text-safe button {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-wrap: balance;
+    line-height: 1.25;
+  }
+
+  .ui-text-safe input,
+  .ui-text-safe textarea {
+    max-width: 100%;
+  }
 }
 
 /* Minimal scrollbar */
