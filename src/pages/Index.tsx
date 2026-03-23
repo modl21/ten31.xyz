@@ -9,9 +9,7 @@ import {
   Crown,
   Flame,
   Gauge,
-  Handshake,
   Orbit,
-  Radar,
   Rocket,
   Sparkles,
   Target,
@@ -21,6 +19,7 @@ import {
   TriangleAlert,
   Users,
 } from 'lucide-react';
+import { generateSecretKey, getPublicKey, nip19 } from 'nostr-tools';
 
 import {
   COMPANIES,
@@ -36,15 +35,19 @@ import {
   type Momentum,
   type InvestorPitch,
 } from '@/lib/gameData';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 const GAME_BACKGROUND = 'https://blossom.ditto.pub/73fd8d04b15e0bbf4e90058ddd375f00ba57c61ef815fd4cb92b0eb7c8e1b1ce.jpeg';
-const INITIAL_CAPITAL = 120;
-const INITIAL_FUND_SIZE = 120;
-const INITIAL_REPUTATION = 56;
+const INITIAL_CAPITAL = 95;
+const INITIAL_FUND_SIZE = 95;
+const INITIAL_REPUTATION = 50;
 const TOTAL_ROUNDS = 64;
 const PHASE_LENGTH = 8;
 const INVESTMENT_OPTIONS = [5, 10, 20] as const;
-const DEPLOYABLE_RAISE_SHARE = 0.55;
+const DEPLOYABLE_RAISE_SHARE = 0.4;
+const BASE_QUARTERLY_BURN = 2.2;
+
+const NIP5_REGEX = /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
 
 type RankedOutcome = {
   title: string;
@@ -89,6 +92,33 @@ type SectorPerformance = {
   gain: number;
 };
 
+type PopupTone = 'good' | 'bad' | 'neutral' | 'report';
+
+type GamePopup = {
+  id: string;
+  tone: PopupTone;
+  title: string;
+  description: string;
+};
+
+type PlayerIdentity = {
+  kind: 'nip5' | 'npub';
+  value: string;
+  label: string;
+};
+
+type LeaderboardEntry = {
+  runId: string;
+  playerLabel: string;
+  identity: string;
+  alphaScore: number;
+  fundValue: number;
+  winners: number;
+  reputation: number;
+  createdAt: number;
+  outcome: string;
+};
+
 const createInitialMomentum = (): Momentum => ({
   AI: 0,
   Infrastructure: 0,
@@ -115,8 +145,8 @@ const formatMoney = (value: number) => `$${value.toFixed(value >= 100 ? 0 : 1)}M
 const metricWidth = (value: number): CSSProperties => ({ width: `${clamp(value, 0, 100)}%` });
 
 const getFitScore = (company: Company): number => {
-  const weighted = company.team * 0.34 + company.product * 0.33 + company.market * 0.33 - company.risk * 0.16;
-  return Math.round(clamp(weighted + company.thesis.length * 4 - 8, 0, 100));
+  const weighted = company.team * 0.33 + company.product * 0.32 + company.market * 0.31 - company.risk * 0.2;
+  return Math.round(clamp(weighted + company.thesis.length * 3.4 - 10, 0, 100));
 };
 
 const getMomentumLabel = (value: number) => {
@@ -128,41 +158,41 @@ const getMomentumLabel = (value: number) => {
 };
 
 const getRankedOutcome = (score: number): RankedOutcome => {
-  if (score >= 1250) {
+  if (score >= 1200) {
     return {
       title: 'Generational Allocator',
-      description: 'LPs are calling. You found signal before the market could price it in.',
+      description: 'You found signal before the market could price it in.',
       accent: 'from-amber-300 via-orange-400 to-rose-500',
     };
   }
 
-  if (score >= 1020) {
+  if (score >= 980) {
     return {
       title: 'Elite Investor',
-      description: 'You built a sharp book, stayed disciplined, and let the winners carry the fund.',
+      description: 'You built a sharp book and let winners carry the fund.',
       accent: 'from-cyan-300 via-sky-400 to-blue-500',
     };
   }
 
-  if (score >= 780) {
+  if (score >= 760) {
     return {
       title: 'Disciplined Operator',
-      description: 'Solid instincts. Not every bet hit, but your portfolio still looks investable.',
+      description: 'Not every bet hit, but your process held up.',
       accent: 'from-emerald-300 via-teal-400 to-cyan-500',
     };
   }
 
-  if (score >= 580) {
+  if (score >= 560) {
     return {
       title: 'Promising Associate',
-      description: 'You saw some truth, chased some hype, and learned a few expensive lessons.',
+      description: 'You saw some truth and chased some noise.',
       accent: 'from-violet-300 via-fuchsia-400 to-rose-500',
     };
   }
 
   return {
     title: 'Tourist Capital',
-    description: 'Too much heat, not enough edge. The market took your lunch money.',
+    description: 'You got punished for loose sizing and weak selectivity.',
     accent: 'from-slate-300 via-slate-400 to-slate-500',
   };
 };
@@ -175,26 +205,34 @@ const buildCompanyMap = (deck: Company[]) =>
 
 const getCurrentMultiple = (investment: Investment, company: Company, momentum: Momentum, currentRound: number, reputation: number) => {
   const holdingPeriods = currentRound - investment.investedRound + 1;
-  const holdingBoost = holdingPeriods * 0.18;
-  const qualityBoost = (company.hiddenQuality - 70) / 17;
-  const fitBoost = (investment.fitScore - 55) / 52;
-  const riskPenalty = (company.risk - 45) / 40;
-  const sectorLift = momentum[company.sector] * 0.8;
-  const macroLift = momentum.global * 0.65;
-  const reputationLift = (reputation - 50) / 110;
-  const volatilitySwing = company.volatility * (momentum[company.sector] * 0.08 + momentum.global * 0.06);
+  const holdingBoost = holdingPeriods * 0.13;
+  const qualityBoost = (company.hiddenQuality - 70) / 21;
+  const fitBoost = (investment.fitScore - 58) / 68;
+  const riskPenalty = (company.risk - 42) / 29;
+  const sectorLift = momentum[company.sector] * 0.55;
+  const macroLift = momentum.global * 0.42;
+  const reputationLift = (reputation - 50) / 170;
+  const volatilitySwing = company.volatility * (momentum[company.sector] * 0.06 + momentum.global * 0.05);
 
   return clamp(
-    0.35 + holdingBoost + qualityBoost + fitBoost - riskPenalty + sectorLift + macroLift + reputationLift + volatilitySwing,
-    0.25,
-    8.5,
+    0.22 + holdingBoost + qualityBoost + fitBoost - riskPenalty + sectorLift + macroLift + reputationLift + volatilitySwing,
+    0.12,
+    5.4,
   );
+};
+
+const isValidNip5 = (value: string) => NIP5_REGEX.test(value.trim());
+
+const generateNpub = () => {
+  const secret = generateSecretKey();
+  const pubkey = getPublicKey(secret);
+  return nip19.npubEncode(pubkey);
 };
 
 const StatBlock = ({ label, value, hint, className = '' }: { label: string; value: string; hint: string; className?: string }) => (
   <div className={`game-panel game-card-hover px-4 py-4 ${className}`}>
     <p className="text-[11px] uppercase tracking-[0.28em] text-white/45">{label}</p>
-    <p className="mt-3 text-2xl font-semibold text-white anim-count-up">{value}</p>
+    <p className="mt-3 text-2xl font-semibold text-white">{value}</p>
     <p className="mt-1 text-sm text-white/55">{hint}</p>
   </div>
 );
@@ -259,6 +297,15 @@ const Index = () => {
   const [raiseAttempts, setRaiseAttempts] = useState<RaiseAttempt[]>([]);
   const [momentum, setMomentum] = useState<Momentum>(createInitialMomentum);
 
+  const [playerIdentity, setPlayerIdentity] = useLocalStorage<PlayerIdentity | null>('ten31:player-identity', null);
+  const [leaderboard, setLeaderboard] = useLocalStorage<LeaderboardEntry[]>('ten31:game-leaderboard', []);
+  const [identityInput, setIdentityInput] = useState('');
+  const [identityError, setIdentityError] = useState('');
+
+  const [activePopup, setActivePopup] = useState<GamePopup | null>(null);
+  const [runId, setRunId] = useState(() => `run-${Date.now()}`);
+  const [scoreLogged, setScoreLogged] = useState(false);
+
   const totalPhases = TOTAL_ROUNDS / PHASE_LENGTH;
   const currentPhase = Math.floor(round / PHASE_LENGTH);
   const currentPhaseRound = round % PHASE_LENGTH;
@@ -269,12 +316,9 @@ const Index = () => {
   const allocationTimeline = useMemo(() => {
     const allocationPhases = TOTAL_ROUNDS / (PHASE_LENGTH * 2);
     const timeline: Company[] = [];
-
     for (let phase = 0; phase < allocationPhases; phase += 1) {
-      const picks = shuffle(COMPANIES).slice(0, PHASE_LENGTH);
-      timeline.push(...picks);
+      timeline.push(...shuffle(COMPANIES).slice(0, PHASE_LENGTH));
     }
-
     return timeline;
   }, [seed]);
 
@@ -308,17 +352,17 @@ const Index = () => {
 
   const availablePitches = useMemo(() => {
     if (!currentRaiseEvent) return [];
-    const currentPhaseStart = currentPhase * PHASE_LENGTH;
+
+    const phaseStart = currentPhase * PHASE_LENGTH;
     const usedThisPhase = new Set(
       raiseAttempts
-        .filter((attempt) => attempt.quarter >= currentPhaseStart && attempt.quarter < currentPhaseStart + PHASE_LENGTH)
+        .filter((attempt) => attempt.quarter >= phaseStart && attempt.quarter < phaseStart + PHASE_LENGTH)
         .map((attempt) => attempt.pitchId),
     );
 
     const pitchCount = clamp(Math.round(currentRaiseEvent.investorPool / 4), 2, 4);
-
     return investorPitches.filter((pitch) => !usedThisPhase.has(pitch.id)).slice(0, pitchCount);
-  }, [currentPhase, currentRaiseEvent, investorPitches, raiseAttempts]);
+  }, [currentRaiseEvent, currentPhase, raiseAttempts, investorPitches]);
 
   const latestEvent = eventLog[0];
   const latestDecision = decisions[0];
@@ -389,6 +433,27 @@ const Index = () => {
     };
   }, [companyMap, decisions, portfolioMarks]);
 
+  const scoreBreakdown = useMemo<ScoreBreakdown>(() => {
+    const valueComponent = Math.round((totalValue - INITIAL_CAPITAL) * 10);
+    const winnerComponent = winners * 30;
+    const reputationComponent = reputation * 4;
+    const raiseComponent = Math.round(totalRaised * 2);
+    const disciplineComponent = decisionInsights.disciplinedPasses * 10 - decisionInsights.expensiveMisses * 20;
+    const riskComponent = Math.max(0, 35 - decisionInsights.overheatedBets * 10);
+
+    return {
+      alphaScore: valueComponent + winnerComponent + reputationComponent + raiseComponent + disciplineComponent + riskComponent,
+      valueComponent,
+      winnerComponent,
+      reputationComponent,
+      raiseComponent,
+      disciplineComponent,
+      riskComponent,
+    };
+  }, [decisionInsights, reputation, totalRaised, totalValue, winners]);
+
+  const rankedOutcome = getRankedOutcome(scoreBreakdown.alphaScore);
+
   const sectorPerformance = useMemo<SectorPerformance[]>(() => {
     const base: Record<Sector, SectorPerformance> = {
       AI: { sector: 'AI', checks: 0, invested: 0, currentValue: 0, gain: 0 },
@@ -414,26 +479,6 @@ const Index = () => {
       .sort((left, right) => right.currentValue - left.currentValue);
   }, [portfolioMarks]);
 
-  const scoreBreakdown = useMemo<ScoreBreakdown>(() => {
-    const valueComponent = Math.round((totalValue - INITIAL_CAPITAL) * 11);
-    const winnerComponent = winners * 35;
-    const reputationComponent = reputation * 5;
-    const raiseComponent = Math.round(totalRaised * 3);
-    const disciplineComponent = decisionInsights.disciplinedPasses * 12 - decisionInsights.expensiveMisses * 16;
-    const riskComponent = Math.max(0, 40 - decisionInsights.overheatedBets * 8);
-
-    return {
-      alphaScore: valueComponent + winnerComponent + reputationComponent + raiseComponent + disciplineComponent + riskComponent,
-      valueComponent,
-      winnerComponent,
-      reputationComponent,
-      raiseComponent,
-      disciplineComponent,
-      riskComponent,
-    };
-  }, [decisionInsights, reputation, totalRaised, totalValue, winners]);
-
-  const rankedOutcome = getRankedOutcome(scoreBreakdown.alphaScore);
   const bestDeal = portfolioMarks[0];
 
   const biggestMiss = useMemo(() => {
@@ -448,6 +493,33 @@ const Index = () => {
   const phaseProgress = clamp(((currentPhaseRound + (mode === 'playing' ? 1 : 0)) / PHASE_LENGTH) * 100, 0, 100);
   const currentFit = currentCompany ? getFitScore(currentCompany) : 0;
 
+  const expectedValue = INITIAL_CAPITAL + round * 1.25;
+  const reportDelta = totalValue - expectedValue;
+  const reportStatus = reportDelta >= 12 ? 'Ahead of plan' : reportDelta >= -4 ? 'On plan' : 'Behind plan';
+
+  const openPopup = (tone: PopupTone, title: string, description: string) => {
+    setActivePopup({
+      id: `${Date.now()}-${Math.random()}`,
+      tone,
+      title,
+      description,
+    });
+  };
+
+  const applyQuarterlyDrag = (cashBefore: number, reputationBefore: number) => {
+    const phaseTax = round >= 48 ? 1.2 : round >= 32 ? 0.8 : round >= 16 ? 0.4 : 0;
+    const burn = BASE_QUARTERLY_BURN + phaseTax;
+    const cashAfterBurn = clamp(cashBefore - burn, 0, 9999);
+    const repPenalty = cashBefore < burn ? 2 : 0;
+    const reputationAfterBurn = clamp(reputationBefore - repPenalty, 20, 99);
+
+    return {
+      burn,
+      cashAfterBurn,
+      reputationAfterBurn,
+    };
+  };
+
   const resetGame = () => {
     setSeed(Date.now());
     setMode('intro');
@@ -460,9 +532,18 @@ const Index = () => {
     setEventLog([]);
     setRaiseAttempts([]);
     setMomentum(createInitialMomentum());
+    setRunId(`run-${Date.now()}`);
+    setScoreLogged(false);
+    setActivePopup(null);
   };
 
   const startGame = () => {
+    if (!playerIdentity) {
+      setIdentityError('Add your Nostr identity first (NIP-05 or generated npub).');
+      return;
+    }
+
+    setIdentityError('');
     setSeed(Date.now());
     setMode('playing');
     setRound(0);
@@ -474,6 +555,49 @@ const Index = () => {
     setEventLog([]);
     setRaiseAttempts([]);
     setMomentum(createInitialMomentum());
+    setRunId(`run-${Date.now()}`);
+    setScoreLogged(false);
+    setActivePopup({
+      id: `welcome-${Date.now()}`,
+      tone: 'neutral',
+      title: 'Run started',
+      description: `Good luck ${playerIdentity.label}. This build is tuned harder: tighter margins, heavier penalties, tougher LP closes.`,
+    });
+  };
+
+  const handleUseNip5 = () => {
+    const value = identityInput.trim();
+    if (!isValidNip5(value)) {
+      setIdentityError('Enter a valid NIP-05, like name@domain.com');
+      return;
+    }
+
+    setPlayerIdentity({
+      kind: 'nip5',
+      value,
+      label: value,
+    });
+
+    setIdentityError('');
+    setIdentityInput('');
+  };
+
+  const handleGenerateNpub = () => {
+    const npub = generateNpub();
+    const short = `${npub.slice(0, 12)}...${npub.slice(-8)}`;
+
+    setPlayerIdentity({
+      kind: 'npub',
+      value: npub,
+      label: short,
+    });
+
+    setIdentityError('');
+  };
+
+  const clearIdentity = () => {
+    setPlayerIdentity(null);
+    setIdentityError('');
   };
 
   const handleDecision = (amount: number | null) => {
@@ -483,17 +607,20 @@ const Index = () => {
     let nextCash = cash;
     let nextReputation = reputation;
     let note = 'You stayed patient and protected dry powder for a better setup.';
+    let popupTone: PopupTone = 'neutral';
+    let popupTitle = 'Decision logged';
 
     if (amount !== null) {
       if (amount > cash) return;
 
       const sectorCount = portfolio.filter((position) => companyMap[position.companyId]?.sector === currentCompany.sector).length;
-      const concentrationPenalty = sectorCount >= 2 ? 2 : sectorCount >= 1 ? 1 : 0;
-      const stagePenalty = currentCompany.stage === 'Pre-seed' && amount >= 20 ? 1 : 0;
+      const concentrationPenalty = sectorCount >= 2 ? 4 : sectorCount >= 1 ? 2 : 0;
+      const stagePenalty = currentCompany.stage === 'Pre-seed' && amount >= 10 ? 2 : 0;
+      const riskPenalty = currentCompany.risk >= 70 && amount >= 10 ? 2 : 0;
 
       nextCash -= amount;
-      const repDelta = fitScore >= 84 ? 4 : fitScore >= 72 ? 2 : fitScore >= 60 ? 0 : -3;
-      nextReputation += repDelta - concentrationPenalty - stagePenalty;
+      const repDelta = fitScore >= 88 ? 3 : fitScore >= 76 ? 1 : fitScore >= 64 ? -1 : -4;
+      nextReputation += repDelta - concentrationPenalty - stagePenalty - riskPenalty;
 
       setPortfolio((current) => [
         ...current,
@@ -505,18 +632,31 @@ const Index = () => {
         },
       ]);
 
-      note =
-        fitScore >= 84
-          ? `You led the round with ${formatMoney(amount)}. The partnership sees flagship potential.`
-          : fitScore >= 68
-            ? `You wrote a ${formatMoney(amount)} check into a credible bet with real upside.`
-            : `You chased the story with ${formatMoney(amount)}. LPs will want to see this decision age well.`;
+      if (fitScore >= 84) {
+        note = `You wrote ${formatMoney(amount)} into a high-conviction position with strong signal integrity.`;
+        popupTone = 'good';
+        popupTitle = 'Great allocation';
+      } else if (fitScore >= 68) {
+        note = `You sized at ${formatMoney(amount)} with mixed signal. This position needs execution to justify the risk.`;
+        popupTone = 'neutral';
+        popupTitle = 'Calculated bet';
+      } else {
+        note = `You deployed ${formatMoney(amount)} into weak-fit risk. This could become an expensive lesson.`;
+        popupTone = 'bad';
+        popupTitle = 'Risky allocation';
+      }
     } else {
-      nextReputation += currentCompany.hiddenQuality >= 90 ? -3 : currentCompany.hiddenQuality <= 68 ? 2 : 1;
-      note =
-        currentCompany.hiddenQuality >= 90
-          ? 'You passed on a company that looked expensive. Time will decide whether that was discipline or fear.'
-          : 'You passed and preserved capital. Sometimes not losing is the edge.';
+      nextReputation += currentCompany.hiddenQuality >= 90 ? -4 : currentCompany.hiddenQuality <= 68 ? 2 : 0;
+
+      if (currentCompany.hiddenQuality >= 90) {
+        note = 'You passed on a potentially elite company. Caution may have cost major upside.';
+        popupTone = 'bad';
+        popupTitle = 'Painful miss risk';
+      } else {
+        note = 'You passed and kept discipline. Capital preservation can be alpha.';
+        popupTone = 'good';
+        popupTitle = 'Disciplined pass';
+      }
     }
 
     const nextEvent = marketEvents[allocationRoundIndex % marketEvents.length];
@@ -534,8 +674,11 @@ const Index = () => {
       Biotech: clamp(momentum.Biotech + (nextEvent.sectorShift.Biotech ?? 0), -1.5, 1.5),
     };
 
-    setCash(nextCash);
-    setReputation(clamp(nextReputation + nextEvent.reputationShift, 20, 99));
+    const { burn, cashAfterBurn, reputationAfterBurn } = applyQuarterlyDrag(nextCash, nextReputation + nextEvent.reputationShift + (nextEvent.tone === 'bear' ? -1 : 0));
+
+    setCash(cashAfterBurn);
+    setReputation(reputationAfterBurn);
+
     setDecisions((current) => [
       {
         companyId: currentCompany.id,
@@ -546,52 +689,65 @@ const Index = () => {
       },
       ...current,
     ]);
+
     setEventLog((current) => [nextEvent, ...current]);
     setMomentum(updatedMomentum);
+
+    openPopup(
+      popupTone,
+      popupTitle,
+      `${note} Market event: ${nextEvent.title}. Quarterly burn: ${formatMoney(burn)}.`,
+    );
+
     setRound((current) => current + 1);
   };
 
   const handleRaiseAttempt = (pitch: InvestorPitch, convictionLevel: number) => {
     if (!currentRaiseEvent || gameOver || isAllocatingPhase) return;
 
-    const trackRecordBoost = clamp(Math.round((totalValue - INITIAL_CAPITAL) / 6), -10, 18);
+    const trackRecordBoost = clamp(Math.round((totalValue - INITIAL_CAPITAL) / 9), -12, 12);
+
     const convictionScore =
       reputation +
-      convictionLevel * 9 +
-      (currentRaiseEvent.tone === 'bull' ? 12 : currentRaiseEvent.tone === 'bear' ? -9 : 0) +
+      convictionLevel * 7 +
+      (currentRaiseEvent.tone === 'bull' ? 8 : currentRaiseEvent.tone === 'bear' ? -12 : 0) +
       trackRecordBoost;
 
-    const riskPremium = pitch.riskLevel === 'aggressive' ? 6 : pitch.riskLevel === 'balanced' ? 2 : 0;
-    const difficultyThreshold = pitch.convictionRequired + currentRaiseEvent.difficulty * 3 + riskPremium;
+    const riskPremium = pitch.riskLevel === 'aggressive' ? 8 : pitch.riskLevel === 'balanced' ? 4 : 0;
+    const difficultyThreshold = pitch.convictionRequired + currentRaiseEvent.difficulty * 3 + riskPremium + 6;
     const success = convictionScore >= difficultyThreshold;
 
     let amount = 0;
     let note = '';
+    let popupTone: PopupTone = success ? 'good' : 'bad';
+    let popupTitle = success ? 'LP close' : 'LP rejection';
+    let nextCash = cash;
 
     if (success) {
-      const qualityMultiplier = 0.76 + convictionLevel * 0.13 + Math.random() * 0.34 + (reputation - 50) / 220;
-      amount = Math.max(6, Math.round(pitch.potentialRaise * qualityMultiplier));
+      const qualityMultiplier = 0.58 + convictionLevel * 0.1 + Math.random() * 0.24 + (reputation - 50) / 280;
+      amount = Math.max(4, Math.round(pitch.potentialRaise * qualityMultiplier));
 
       const deployableCash = Math.round(amount * DEPLOYABLE_RAISE_SHARE);
       setFundSize((prev) => prev + amount);
-      setCash((prev) => prev + deployableCash);
+      nextCash += deployableCash;
 
       note =
-        convictionScore >= difficultyThreshold + 18
-          ? `Exceptional pitch. ${pitch.title} committed ${formatMoney(amount)}. ${formatMoney(deployableCash)} is now deployable.`
-          : convictionScore >= difficultyThreshold + 8
-            ? `Solid close. ${pitch.title} committed ${formatMoney(amount)}. You unlock ${formatMoney(deployableCash)} in fresh dry powder.`
-            : `Narrow win. ${pitch.title} committed ${formatMoney(amount)}. You gained ${formatMoney(deployableCash)} deployable this quarter.`;
+        convictionScore >= difficultyThreshold + 16
+          ? `${pitch.title} committed ${formatMoney(amount)}. You unlocked ${formatMoney(deployableCash)} deployable.`
+          : convictionScore >= difficultyThreshold + 7
+            ? `${pitch.title} wrote ${formatMoney(amount)}. You gained ${formatMoney(deployableCash)} fresh dry powder.`
+            : `${pitch.title} barely committed ${formatMoney(amount)}.`;
     } else {
-      note =
-        convictionScore < difficultyThreshold - 15
-          ? `${pitch.title} passed. The conviction gap was too wide.`
-          : `${pitch.title} deferred. They need a stronger quarter before committing.`;
+      note = convictionScore < difficultyThreshold - 12 ? `${pitch.title} passed hard.` : `${pitch.title} deferred this quarter.`;
+      popupTitle = 'Fundraising miss';
     }
 
-    const repDelta = success ? (convictionLevel >= 3 ? 4 : 3) : convictionLevel >= 3 ? -4 : -2;
+    const repDelta = success ? (convictionLevel >= 3 ? 3 : 2) : convictionLevel >= 3 ? -5 : -3;
+    const { burn, cashAfterBurn, reputationAfterBurn } = applyQuarterlyDrag(nextCash, reputation + repDelta);
 
-    setReputation((prev) => clamp(prev + repDelta, 20, 99));
+    setCash(cashAfterBurn);
+    setReputation(reputationAfterBurn);
+
     setRaiseAttempts((current) => [
       {
         pitchId: pitch.id,
@@ -603,6 +759,13 @@ const Index = () => {
       },
       ...current,
     ]);
+
+    openPopup(
+      popupTone,
+      popupTitle,
+      `${note} Quarterly burn: ${formatMoney(burn)}. Threshold ${difficultyThreshold} vs score ${convictionScore}.`,
+    );
+
     setRound((current) => current + 1);
   };
 
@@ -611,6 +774,29 @@ const Index = () => {
       setMode('gameover');
     }
   }, [round, mode]);
+
+  useEffect(() => {
+    if (!activePopup) return;
+
+    const timeout = setTimeout(
+      () => setActivePopup(null),
+      activePopup.tone === 'report' ? 9000 : 6500,
+    );
+
+    return () => clearTimeout(timeout);
+  }, [activePopup]);
+
+  useEffect(() => {
+    if (mode !== 'playing' || round === 0) return;
+
+    if (round % 4 === 0) {
+      openPopup(
+        'report',
+        `Quarterly report · Q${round}`,
+        `Status: ${reportStatus}. Fund value ${formatMoney(totalValue)}, dry powder ${formatMoney(cash)}, winners ${winners}, reputation ${reputation}.`,
+      );
+    }
+  }, [mode, round, reportStatus, totalValue, cash, winners, reputation]);
 
   useEffect(() => {
     if (mode !== 'playing') return;
@@ -651,7 +837,45 @@ const Index = () => {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [availablePitches, currentGamePhase, mode, handleDecision, handleRaiseAttempt]);
+  }, [mode, currentGamePhase, availablePitches, cash, reputation, round, totalValue]);
+
+  useEffect(() => {
+    if (mode !== 'gameover' || scoreLogged || !playerIdentity) return;
+
+    const entry: LeaderboardEntry = {
+      runId,
+      playerLabel: playerIdentity.label,
+      identity: playerIdentity.value,
+      alphaScore: scoreBreakdown.alphaScore,
+      fundValue: totalValue,
+      winners,
+      reputation,
+      createdAt: Date.now(),
+      outcome: rankedOutcome.title,
+    };
+
+    setLeaderboard((current) =>
+      [...current, entry]
+        .sort((left, right) => {
+          if (right.alphaScore !== left.alphaScore) return right.alphaScore - left.alphaScore;
+          return right.fundValue - left.fundValue;
+        })
+        .slice(0, 25),
+    );
+
+    setScoreLogged(true);
+  }, [
+    mode,
+    scoreLogged,
+    playerIdentity,
+    runId,
+    scoreBreakdown.alphaScore,
+    totalValue,
+    winners,
+    reputation,
+    rankedOutcome.title,
+    setLeaderboard,
+  ]);
 
   const renderDecisionFeed = () => (
     <div className="game-panel p-5 game-card-hover anim-fade-in">
@@ -674,20 +898,13 @@ const Index = () => {
           {decisions.slice(0, 5).map((decision, index) => {
             const company = companyMap[decision.companyId];
             return (
-              <div
-                key={`${decision.companyId}-${decision.round}-${index}`}
-                className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 anim-fade-in"
-              >
+              <div key={`${decision.companyId}-${decision.round}-${index}`} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 anim-fade-in">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-base font-semibold text-white">{company?.name ?? 'Unknown company'}</p>
                     <p className="mt-1 text-xs uppercase tracking-[0.24em] text-white/40">Quarter {decision.round + 1}</p>
                   </div>
-                  <div
-                    className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${
-                      decision.choice === 'invest' ? 'bg-cyan-400/15 text-cyan-100' : 'bg-white/10 text-white/70'
-                    }`}
-                  >
+                  <div className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${decision.choice === 'invest' ? 'bg-cyan-400/15 text-cyan-100' : 'bg-white/10 text-white/70'}`}>
                     {decision.choice === 'invest' ? `Invested ${formatMoney(decision.amount ?? 0)}` : 'Passed'}
                   </div>
                 </div>
@@ -715,9 +932,10 @@ const Index = () => {
               <p className="mt-2 text-sm text-white/60">
                 Quarter {round + 1} of {TOTAL_ROUNDS} · Phase {currentPhase + 1} of {totalPhases}
               </p>
+              {playerIdentity && <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/40">Player: {playerIdentity.label}</p>}
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-4">
               <div className="rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3">
                 <p className="text-[11px] uppercase tracking-[0.24em] text-white/40">Fund value</p>
                 <p className="mt-1 text-xl font-semibold text-white">{formatMoney(totalValue)}</p>
@@ -730,6 +948,12 @@ const Index = () => {
                 <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-100/70">Reputation</p>
                 <p className="mt-1 text-xl font-semibold text-cyan-100">{reputation}</p>
               </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3">
+                <p className="text-[11px] uppercase tracking-[0.24em] text-white/40">Run report</p>
+                <p className={`mt-1 text-xl font-semibold ${reportStatus === 'Ahead of plan' ? 'text-emerald-100' : reportStatus === 'On plan' ? 'text-cyan-100' : 'text-rose-100'}`}>
+                  {reportStatus}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -739,10 +963,7 @@ const Index = () => {
               <span>{Math.round(globalProgress)}%</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-white/10">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-blue-300 to-orange-300 progress-pulse"
-                style={metricWidth(globalProgress)}
-              />
+              <div className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-blue-300 to-orange-300 progress-pulse" style={metricWidth(globalProgress)} />
             </div>
 
             <div className="flex items-center justify-between text-xs uppercase tracking-[0.24em] text-white/45">
@@ -751,37 +972,10 @@ const Index = () => {
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-white/10">
               <div
-                className={`h-full rounded-full bg-gradient-to-r ${
-                  currentGamePhase === 'allocating'
-                    ? 'from-cyan-300 via-sky-300 to-blue-300'
-                    : 'from-orange-300 via-amber-300 to-rose-300'
-                } progress-pulse`}
+                className={`h-full rounded-full bg-gradient-to-r ${currentGamePhase === 'allocating' ? 'from-cyan-300 via-sky-300 to-blue-300' : 'from-orange-300 via-amber-300 to-rose-300'} progress-pulse`}
                 style={metricWidth(phaseProgress)}
               />
             </div>
-          </div>
-
-          <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
-            {Array.from({ length: totalPhases }).map((_, index) => {
-              const done = index < currentPhase;
-              const active = index === currentPhase;
-              const phaseType = index % 2 === 0 ? 'Alloc' : 'Raise';
-              return (
-                <div
-                  key={`phase-${index}`}
-                  className={`rounded-xl border px-3 py-2 text-center text-xs uppercase tracking-[0.2em] ${
-                    done
-                      ? 'border-emerald-300/35 bg-emerald-300/10 text-emerald-100'
-                      : active
-                        ? 'border-cyan-300/35 bg-cyan-300/10 text-cyan-100'
-                        : 'border-white/10 bg-white/[0.03] text-white/50'
-                  }`}
-                >
-                  <p className="text-[10px] opacity-70">P{index + 1}</p>
-                  <p className="mt-1">{phaseType}</p>
-                </div>
-              );
-            })}
           </div>
         </div>
       </header>
@@ -790,7 +984,7 @@ const Index = () => {
 
   const renderIntro = () => (
     <main className="flex flex-1 flex-col justify-between gap-10">
-      <section className="grid flex-1 items-center gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
+      <section className="grid flex-1 items-center gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
         <div className="space-y-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-xs uppercase tracking-[0.32em] text-cyan-100 anim-fade-in">
             <Sparkles className="h-4 w-4" />
@@ -799,23 +993,100 @@ const Index = () => {
 
           <div className="space-y-5">
             <p className="max-w-xl text-sm uppercase tracking-[0.35em] text-white/45 anim-fade-in anim-delay-1">
-              Back the future. Dodge the hype. Compound conviction.
+              Hard mode economy. Thin margins. Expensive mistakes.
             </p>
             <h1 className="max-w-5xl text-5xl font-semibold leading-[0.95] text-white sm:text-6xl lg:text-8xl anim-fade-in anim-delay-2">
               Build a fund
               <span className="bg-gradient-to-r from-cyan-200 via-white to-orange-300 bg-clip-text text-transparent"> quarter by quarter.</span>
             </h1>
             <p className="max-w-2xl text-lg leading-relaxed text-white/68 sm:text-xl anim-fade-in anim-delay-3">
-              You run a $120M fund. 64 quarters across allocation and fundraising cycles. Signal quality, sizing, and discipline determine whether you
-              become a generational allocator or a cautionary tale.
+              This run is tougher: lower starting resources, higher operating drag, harder LP closes, and steeper penalties for weak-fit bets.
             </p>
           </div>
 
-          <div className="flex flex-col gap-4 sm:flex-row anim-fade-in anim-delay-4">
+          <div className="grid gap-4 sm:grid-cols-4">
+            <StatBlock label="Starting fund" value={formatMoney(INITIAL_CAPITAL)} hint="Hard mode baseline." className="anim-fade-in anim-delay-4" />
+            <StatBlock label="Quarterly drag" value={formatMoney(BASE_QUARTERLY_BURN)} hint="Burn rises over time." className="anim-fade-in anim-delay-5" />
+            <StatBlock label="Raise unlock" value={`${Math.round(DEPLOYABLE_RAISE_SHARE * 100)}%`} hint="Deployable from LP closes." className="anim-fade-in anim-delay-6" />
+            <StatBlock label="Objective" value="Top leaderboard" hint="Beat prior runs." className="anim-fade-in anim-delay-7" />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="game-panel relative overflow-hidden p-6 sm:p-8 anim-scale-in">
+            <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.32em] text-white/40">Identity required</p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">Link your Nostr identity</h2>
+              </div>
+              <Users className="h-8 w-8 text-cyan-200/70" />
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-white/45">Use existing NIP-05</p>
+                <div className="mt-3 flex gap-2">
+                  <input
+                    value={identityInput}
+                    onChange={(event) => setIdentityInput(event.target.value)}
+                    placeholder="name@domain.com"
+                    className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-cyan-300/40 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleUseNip5}
+                    className="rounded-xl border border-cyan-300/25 bg-cyan-300/10 px-3 py-2 text-xs uppercase tracking-[0.16em] text-cyan-100 transition hover:bg-cyan-300/20"
+                  >
+                    Use
+                  </button>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-white/45">No NIP-05? Generate an npub</p>
+                <button
+                  type="button"
+                  onClick={handleGenerateNpub}
+                  className="mt-3 w-full rounded-xl border border-orange-300/25 bg-orange-300/10 px-3 py-2 text-xs uppercase tracking-[0.16em] text-orange-100 transition hover:bg-orange-300/20"
+                >
+                  Generate npub
+                </button>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-white/45">Current identity</p>
+                {playerIdentity ? (
+                  <>
+                    <p className="mt-2 break-all text-sm text-cyan-100">{playerIdentity.value}</p>
+                    <div className="mt-3 flex gap-2">
+                      <span className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white/50">
+                        {playerIdentity.kind}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={clearIdentity}
+                        className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white/60 transition hover:bg-white/10"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <p className="mt-2 text-sm text-white/55">No identity selected.</p>
+                )}
+              </div>
+
+              {identityError && <p className="text-sm text-rose-200">{identityError}</p>}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
               onClick={startGame}
-              className="group inline-flex items-center justify-center rounded-2xl border border-cyan-300/30 bg-cyan-300/15 px-7 py-4 text-sm font-medium uppercase tracking-[0.25em] text-cyan-50 transition hover:bg-cyan-300/20 hover:shadow-[0_0_30px_rgba(34,211,238,0.18)]"
+              disabled={!playerIdentity}
+              className="group inline-flex items-center justify-center rounded-2xl border border-cyan-300/30 bg-cyan-300/15 px-7 py-4 text-sm font-medium uppercase tracking-[0.25em] text-cyan-50 transition hover:bg-cyan-300/20 hover:shadow-[0_0_30px_rgba(34,211,238,0.18)] disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-white/35"
             >
               Start Fund I
               <ArrowRight className="ml-3 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -828,67 +1099,6 @@ const Index = () => {
               Shuffle Scenario
             </button>
           </div>
-
-          <div className="grid gap-4 sm:grid-cols-4">
-            <StatBlock label="Starting fund" value="$120M" hint="Deploy capital with intent." className="anim-fade-in anim-delay-5" />
-            <StatBlock label="Time horizon" value="64 Quarters" hint="Eight strategic phases." className="anim-fade-in anim-delay-6" />
-            <StatBlock label="Modes" value="Invest / Raise" hint="Allocate then convince LPs." className="anim-fade-in anim-delay-7" />
-            <StatBlock label="Objective" value="Compound" hint="Max alpha with discipline." className="anim-fade-in anim-delay-8" />
-          </div>
-        </div>
-
-        <div className="game-panel relative overflow-hidden p-6 sm:p-8 anim-scale-in">
-          <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-          <div className="mb-8 flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.32em] text-white/40">What changed</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">Sharper simulation loop</h2>
-            </div>
-            <div className="rounded-full border border-orange-300/30 bg-orange-300/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-orange-100 anim-pulse-glow">
-              Full pass
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 game-card-hover">
-              <div className="flex items-start justify-between gap-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/70">Allocation upgrades</p>
-                  <h3 className="mt-2 text-2xl font-semibold text-white">Better deal flow and decision clarity</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-white/60">
-                    Distinct allocation timeline, improved concentration penalties, stronger event reactions, and cleaner memo-style context for every deal.
-                  </p>
-                </div>
-                <Radar className="hidden h-10 w-10 text-cyan-200/80 sm:block anim-float" />
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 game-card-hover">
-              <div className="flex items-start justify-between gap-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.28em] text-orange-100/70">Fundraising upgrades</p>
-                  <h3 className="mt-2 text-2xl font-semibold text-white">Dynamic LP market + deployable capital</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-white/60">
-                    Raise events now rotate during the phase and successful closes unlock fresh deployable dry powder next cycle.
-                  </p>
-                </div>
-                <Handshake className="hidden h-10 w-10 text-orange-200/80 sm:block anim-float" />
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 game-card-hover">
-              <div className="flex items-start justify-between gap-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.28em] text-emerald-100/70">Run intelligence</p>
-                  <h3 className="mt-2 text-2xl font-semibold text-white">Decision feed + score breakdown</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-white/60">
-                    Richer telemetry across phase progress, risk quality, sector outcomes, and alpha score components.
-                  </p>
-                </div>
-                <BarChart3 className="hidden h-10 w-10 text-emerald-200/80 sm:block anim-float" />
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -899,7 +1109,7 @@ const Index = () => {
   const renderAllocatingPhase = () => (
     <main className="grid flex-1 gap-4 xl:grid-cols-[1.3fr_0.7fr] phase-enter">
       <section className="space-y-4">
-        {currentCompany ? (
+        {currentCompany && (
           <div className="game-panel overflow-hidden p-6 sm:p-8 game-card-hover">
             <div className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-8 lg:flex-row lg:items-start lg:justify-between">
               <div className="space-y-4">
@@ -908,9 +1118,7 @@ const Index = () => {
                   {currentCompany.sector}
                 </div>
                 <div>
-                  <p className="text-sm uppercase tracking-[0.35em] text-white/35">
-                    Deal {currentPhaseRound + 1} of {PHASE_LENGTH}
-                  </p>
+                  <p className="text-sm uppercase tracking-[0.35em] text-white/35">Deal {currentPhaseRound + 1} of {PHASE_LENGTH}</p>
                   <h2 className="mt-3 text-4xl font-semibold text-white sm:text-5xl">{currentCompany.name}</h2>
                   <p className="mt-3 max-w-3xl text-lg leading-relaxed text-white/72">{currentCompany.headline}</p>
                 </div>
@@ -977,21 +1185,14 @@ const Index = () => {
                     </div>
                     <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4">
                       <p className="text-[11px] uppercase tracking-[0.28em] text-white/40">Thesis fit</p>
-                      <p className="mt-2 text-4xl font-semibold text-white anim-number-pop">{currentFit}</p>
+                      <p className="mt-2 text-4xl font-semibold text-white">{currentFit}</p>
                       <p className="mt-2 text-sm text-white/55">
-                        {currentFit >= 80
-                          ? 'Rare alignment. The visible signal is unusually strong.'
-                          : currentFit >= 65
-                            ? 'Promising deal. You still need discipline on price and risk.'
-                            : 'Tempting, but the story may be better than the business.'}
+                        {currentFit >= 84
+                          ? 'Rare alignment. Strong signal and price discipline required.'
+                          : currentFit >= 70
+                            ? 'Playable setup, but sizing discipline is critical.'
+                            : 'Weak fit. Treat this as capital at risk.'}
                       </p>
-                    </div>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {currentCompany.thesis.map((tag) => (
-                        <span key={tag} className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs text-white/65">
-                          {tag}
-                        </span>
-                      ))}
                     </div>
                   </div>
                 </div>
@@ -1025,17 +1226,10 @@ const Index = () => {
                       <p className="mt-2 text-xs text-white/55">Key P</p>
                     </button>
                   </div>
-                  <p className="mt-4 text-sm text-white/50">
-                    Tip: great funds are not just about picking winners. They are about sizing winners while preserving capital for obvious monsters.
-                  </p>
+                  <p className="mt-4 text-sm text-white/50">This economy punishes sloppy sizing. Every quarter includes operating drag.</p>
                 </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="game-panel overflow-hidden p-8 text-center">
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-100/70">Allocation complete</p>
-            <h2 className="mt-3 text-4xl font-semibold text-white">Preparing next setup</h2>
           </div>
         )}
       </section>
@@ -1047,158 +1241,46 @@ const Index = () => {
               <p className="text-xs uppercase tracking-[0.28em] text-white/40">Live market</p>
               <h3 className="mt-2 text-2xl font-semibold text-white">Pulse board</h3>
             </div>
-            <div
-              className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] ${
-                momentum.global >= 0 ? 'bg-emerald-400/15 text-emerald-100' : 'bg-rose-400/15 text-rose-100'
-              }`}
-            >
+            <div className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] ${momentum.global >= 0 ? 'bg-emerald-400/15 text-emerald-100' : 'bg-rose-400/15 text-rose-100'}`}>
               {getMomentumLabel(momentum.global)}
             </div>
           </div>
 
-          <div
-            className={`rounded-3xl border p-5 ${
-              latestEvent
-                ? latestEvent.tone === 'bull'
-                  ? 'border-emerald-300/20 bg-emerald-300/10'
-                  : latestEvent.tone === 'bear'
-                    ? 'border-rose-300/20 bg-rose-300/10'
-                    : 'border-white/10 bg-white/[0.04]'
-                : 'border-white/10 bg-white/[0.04]'
-            }`}
-          >
+          <div className={`rounded-3xl border p-5 ${latestEvent ? (latestEvent.tone === 'bull' ? 'border-emerald-300/20 bg-emerald-300/10' : latestEvent.tone === 'bear' ? 'border-rose-300/20 bg-rose-300/10' : 'border-white/10 bg-white/[0.04]') : 'border-white/10 bg-white/[0.04]'}`}>
             {latestEvent ? (
               <>
                 <div className="flex items-center gap-3">
-                  {latestEvent.tone === 'bull' ? (
-                    <TrendingUp className="h-5 w-5 text-emerald-100" />
-                  ) : latestEvent.tone === 'bear' ? (
-                    <TrendingDown className="h-5 w-5 text-rose-100" />
-                  ) : (
-                    <Orbit className="h-5 w-5 text-white" />
-                  )}
+                  {latestEvent.tone === 'bull' ? <TrendingUp className="h-5 w-5 text-emerald-100" /> : latestEvent.tone === 'bear' ? <TrendingDown className="h-5 w-5 text-rose-100" /> : <Orbit className="h-5 w-5 text-white" />}
                   <p className="text-sm font-medium uppercase tracking-[0.2em] text-white">{latestEvent.title}</p>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-white/68">{latestEvent.description}</p>
               </>
             ) : (
-              <>
-                <div className="flex items-center gap-3">
-                  <Orbit className="h-5 w-5 text-cyan-100" />
-                  <p className="text-sm font-medium uppercase tracking-[0.2em] text-white">Market waiting for your first move</p>
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-white/60">
-                  The board starts reacting the moment you deploy or pass on your first company.
-                </p>
-              </>
+              <p className="text-sm text-white/60">Market reaction appears after your first decision.</p>
             )}
           </div>
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {(['AI', 'Infrastructure', 'Energy', 'Security', 'Fintech', 'Robotics', 'Climate', 'Biotech'] as Sector[]).map((sector) => (
-              <div key={sector} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
-                <div className="mb-2 flex items-center justify-between text-sm text-white/65">
-                  <span>{sector}</span>
-                  <span>{getMomentumLabel(momentum[sector])}</span>
-                </div>
-                <div className="h-2 rounded-full bg-white/8">
-                  <div
-                    className={`h-full rounded-full bg-gradient-to-r anim-bar-fill ${sectorAccent[sector].split(' ').find((token) => token.startsWith('from-')) ?? 'from-cyan-300'} via-white/80 to-transparent`}
-                    style={{ width: `${clamp(((momentum[sector] + 1.5) / 3) * 100, 5, 100)}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="game-panel p-5 game-card-hover anim-fade-in">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-white/40">Portfolio</p>
-              <h3 className="mt-2 text-2xl font-semibold text-white">Live marks</h3>
-            </div>
-            <div className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/55">
-              {portfolioMarks.length} positions
-            </div>
-          </div>
-
-          {portfolioMarks.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] px-5 py-10 text-center text-sm leading-relaxed text-white/50">
-              No checks written yet. The game begins when you back your first founder.
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {portfolioMarks.slice(0, 6).map((investment) => (
-                <div key={investment.company.id} className="rounded-3xl border border-white/10 bg-white/[0.03] p-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-lg font-semibold text-white">{investment.company.name}</p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.24em] text-white/40">{investment.company.sector}</p>
-                    </div>
-                    <div
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        investment.multiple >= 1.6
-                          ? 'bg-emerald-400/15 text-emerald-100'
-                          : investment.multiple >= 1
-                            ? 'bg-cyan-400/15 text-cyan-100'
-                            : 'bg-rose-400/15 text-rose-100'
-                      }`}
-                    >
-                      {investment.multiple.toFixed(2)}x
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
-                    <div>
-                      <p className="text-white/40">Check</p>
-                      <p className="mt-1 text-white">{formatMoney(investment.amount)}</p>
-                    </div>
-                    <div>
-                      <p className="text-white/40">Current value</p>
-                      <p className="mt-1 text-white">{formatMoney(investment.currentValue)}</p>
-                    </div>
-                    <div>
-                      <p className="text-white/40">Fit</p>
-                      <p className="mt-1 text-white">{investment.fitScore}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {renderDecisionFeed()}
       </aside>
 
-      {renderGlobalFooter('Goal: leave the run with the highest marked fund value, real winners in the book, and enough discipline to earn another vehicle.')}
+      {renderGlobalFooter('Goal: leave the run with high marked value, real winners, and discipline strong enough to raise another vehicle.')}
     </main>
   );
 
   const renderRaisingPhase = () => (
     <main className="grid flex-1 gap-4 xl:grid-cols-[1.3fr_0.7fr] phase-enter">
       <section className="space-y-4">
-        {currentRaiseEvent ? (
+        {currentRaiseEvent && (
           <div className="game-panel overflow-hidden p-6 sm:p-8 game-card-hover">
             <div className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-8 lg:flex-row lg:items-start lg:justify-between">
               <div className="space-y-4">
-                <div
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs uppercase tracking-[0.24em] ${
-                    currentRaiseEvent.tone === 'bull'
-                      ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-100'
-                      : currentRaiseEvent.tone === 'bear'
-                        ? 'border-rose-400/30 bg-rose-400/10 text-rose-100'
-                        : 'border-white/20 bg-white/5 text-white/70'
-                  }`}
-                >
+                <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs uppercase tracking-[0.24em] ${currentRaiseEvent.tone === 'bull' ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-100' : currentRaiseEvent.tone === 'bear' ? 'border-rose-400/30 bg-rose-400/10 text-rose-100' : 'border-white/20 bg-white/5 text-white/70'}`}>
                   <Users className="h-4 w-4" />
                   {currentRaiseEvent.tone === 'bull' ? 'LP Friendly' : currentRaiseEvent.tone === 'bear' ? 'LP Challenging' : 'Neutral Market'}
                 </div>
                 <div>
-                  <p className="text-sm uppercase tracking-[0.35em] text-white/35">
-                    Fundraising quarter {currentPhaseRound + 1} of {PHASE_LENGTH}
-                  </p>
+                  <p className="text-sm uppercase tracking-[0.35em] text-white/35">Fundraising quarter {currentPhaseRound + 1} of {PHASE_LENGTH}</p>
                   <h2 className="mt-3 text-4xl font-semibold text-white sm:text-5xl">{currentRaiseEvent.title}</h2>
                   <p className="mt-3 max-w-3xl text-lg leading-relaxed text-white/72">{currentRaiseEvent.description}</p>
                 </div>
@@ -1208,12 +1290,10 @@ const Index = () => {
                 <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4">
                   <p className="text-[11px] uppercase tracking-[0.25em] text-white/40">Investor pool</p>
                   <p className="mt-2 text-2xl font-semibold text-white">{currentRaiseEvent.investorPool}</p>
-                  <p className="mt-1 text-xs text-white/50">active prospects</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4">
                   <p className="text-[11px] uppercase tracking-[0.25em] text-white/40">Difficulty</p>
                   <p className="mt-2 text-2xl font-semibold text-white">{currentRaiseEvent.difficulty}/10</p>
-                  <p className="mt-1 text-xs text-white/50">higher means tougher closes</p>
                 </div>
               </div>
             </div>
@@ -1225,27 +1305,19 @@ const Index = () => {
                   <p className="text-sm font-medium uppercase tracking-[0.2em]">Pitch execution</p>
                 </div>
                 <p className="text-sm text-white/65">
-                  Raised capital is split into committed fund value and deployable dry powder. You currently unlock {Math.round(DEPLOYABLE_RAISE_SHARE * 100)}% of each successful close as immediate investing power.
+                  Tougher terms now apply. You only unlock {Math.round(DEPLOYABLE_RAISE_SHARE * 100)}% of raised capital as immediate dry powder.
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 {availablePitches.map((pitch) => {
-                  const riskPremium = pitch.riskLevel === 'aggressive' ? 6 : pitch.riskLevel === 'balanced' ? 2 : 0;
-                  const threshold = pitch.convictionRequired + currentRaiseEvent.difficulty * 3 + riskPremium;
+                  const riskPremium = pitch.riskLevel === 'aggressive' ? 8 : pitch.riskLevel === 'balanced' ? 4 : 0;
+                  const threshold = pitch.convictionRequired + currentRaiseEvent.difficulty * 3 + riskPremium + 6;
 
                   return (
                     <div key={pitch.id} className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 game-card-hover">
                       <div className="mb-3 flex items-center justify-between">
-                        <div
-                          className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.15em] ${
-                            pitch.riskLevel === 'safe'
-                              ? 'bg-emerald-400/15 text-emerald-100'
-                              : pitch.riskLevel === 'balanced'
-                                ? 'bg-cyan-400/15 text-cyan-100'
-                                : 'bg-orange-400/15 text-orange-100'
-                          }`}
-                        >
+                        <div className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.15em] ${pitch.riskLevel === 'safe' ? 'bg-emerald-400/15 text-emerald-100' : pitch.riskLevel === 'balanced' ? 'bg-cyan-400/15 text-cyan-100' : 'bg-orange-400/15 text-orange-100'}`}>
                           {pitch.riskLevel}
                         </div>
                         <div className="text-right">
@@ -1263,27 +1335,13 @@ const Index = () => {
                       </div>
 
                       <div className="mt-4 grid gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleRaiseAttempt(pitch, 1)}
-                          className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 px-4 py-3 text-sm font-medium text-cyan-50 transition hover:bg-cyan-300/18"
-                        >
+                        <button type="button" onClick={() => handleRaiseAttempt(pitch, 1)} className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 px-4 py-3 text-sm font-medium text-cyan-50 transition hover:bg-cyan-300/18">
                           Convince (Low)
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRaiseAttempt(pitch, 2)}
-                          disabled={reputation < 48}
-                          className="rounded-2xl border border-orange-300/25 bg-orange-300/10 px-4 py-3 text-sm font-medium text-orange-50 transition hover:bg-orange-300/18 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-white/30"
-                        >
+                        <button type="button" onClick={() => handleRaiseAttempt(pitch, 2)} disabled={reputation < 52} className="rounded-2xl border border-orange-300/25 bg-orange-300/10 px-4 py-3 text-sm font-medium text-orange-50 transition hover:bg-orange-300/18 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-white/30">
                           Persuade (Medium)
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRaiseAttempt(pitch, 3)}
-                          disabled={reputation < 66}
-                          className="rounded-2xl border border-rose-300/25 bg-rose-300/10 px-4 py-3 text-sm font-medium text-rose-50 transition hover:bg-rose-300/18 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-white/30"
-                        >
+                        <button type="button" onClick={() => handleRaiseAttempt(pitch, 3)} disabled={reputation < 70} className="rounded-2xl border border-rose-300/25 bg-rose-300/10 px-4 py-3 text-sm font-medium text-rose-50 transition hover:bg-rose-300/18 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-white/30">
                           Dominate (High)
                         </button>
                       </div>
@@ -1291,18 +1349,7 @@ const Index = () => {
                   );
                 })}
               </div>
-
-              {availablePitches.length === 0 && (
-                <div className="rounded-3xl border border-dashed border-white/12 bg-white/[0.03] px-6 py-10 text-center text-sm text-white/55">
-                  No investors left this quarter. Advance to get a fresh slate next quarter.
-                </div>
-              )}
             </div>
-          </div>
-        ) : (
-          <div className="game-panel overflow-hidden p-8 text-center">
-            <p className="text-sm uppercase tracking-[0.3em] text-orange-100/70">Fundraising complete</p>
-            <h2 className="mt-3 text-4xl font-semibold text-white">Preparing next allocation cycle</h2>
           </div>
         )}
       </section>
@@ -1312,27 +1359,22 @@ const Index = () => {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-white/40">Track record</p>
-              <h3 className="mt-2 text-2xl font-semibold text-white">Your pedigree</h3>
-            </div>
-            <div
-              className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] ${
-                reputation >= 70 ? 'bg-emerald-400/15 text-emerald-100' : reputation >= 50 ? 'bg-cyan-400/15 text-cyan-100' : 'bg-rose-400/15 text-rose-100'
-              }`}
-            >
-              {reputation >= 70 ? 'Elite' : reputation >= 50 ? 'Solid' : 'Developing'}
+              <h3 className="mt-2 text-2xl font-semibold text-white">Your report</h3>
             </div>
           </div>
 
           <div className="space-y-4">
-            <MetricBar label="Portfolio value" value={Math.min((totalValue / INITIAL_CAPITAL) * 50, 100)} />
+            <MetricBar label="Portfolio value" value={Math.min((totalValue / INITIAL_CAPITAL) * 55, 100)} />
             <MetricBar label="Reputation" value={reputation} />
             <MetricBar label="Win rate" value={portfolioMarks.length ? (portfolioMarks.filter((p) => p.multiple >= 1.5).length / portfolioMarks.length) * 100 : 0} showPercent />
-            <MetricBar label="Fund growth" value={Math.min((fundSize / INITIAL_FUND_SIZE) * 50, 100)} />
+            <MetricBar label="Fund growth" value={Math.min((fundSize / INITIAL_FUND_SIZE) * 55, 100)} />
           </div>
 
           <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/60">
-            <p className="font-medium text-white">Deployable cash unlocked by fundraising:</p>
-            <p className="mt-2 text-cyan-100">{formatMoney(totalRaised * DEPLOYABLE_RAISE_SHARE)}</p>
+            <p className="font-medium text-white">Quarterly status:</p>
+            <p className={`mt-2 ${reportStatus === 'Ahead of plan' ? 'text-emerald-100' : reportStatus === 'On plan' ? 'text-cyan-100' : 'text-rose-100'}`}>
+              {reportStatus}
+            </p>
           </div>
         </div>
 
@@ -1359,11 +1401,7 @@ const Index = () => {
                         <p className="text-base font-semibold text-white">{pitch?.title ?? 'Unknown investor'}</p>
                         <p className="mt-1 text-xs uppercase tracking-[0.24em] text-white/40">Quarter {attempt.quarter + 1}</p>
                       </div>
-                      <div
-                        className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${
-                          attempt.success ? 'bg-emerald-400/15 text-emerald-100' : 'bg-rose-400/15 text-rose-100'
-                        }`}
-                      >
+                      <div className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${attempt.success ? 'bg-emerald-400/15 text-emerald-100' : 'bg-rose-400/15 text-rose-100'}`}>
                         {attempt.success ? `+${formatMoney(attempt.amount)}` : 'Passed'}
                       </div>
                     </div>
@@ -1375,249 +1413,226 @@ const Index = () => {
             </div>
           )}
         </div>
-
-        {renderDecisionFeed()}
       </aside>
 
       {renderGlobalFooter('Goal: build a generational fund. Strong returns attract capital. Weak returns close doors.')}
     </main>
   );
 
-  const renderGameOver = () => (
-    <main className="flex flex-1 flex-col gap-4 phase-enter">
-      <header>
-        <div className="game-panel overflow-hidden p-8">
-          <div className="mb-10 flex flex-col gap-5 border-b border-white/10 pb-8 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm uppercase tracking-[0.34em] text-cyan-100/65">Fund marked to market</p>
-              <h2 className="mt-3 text-4xl font-semibold text-white sm:text-6xl">{rankedOutcome.title}</h2>
-              <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/68">{rankedOutcome.description}</p>
+  const renderGameOver = () => {
+    const rankedLeaderboard = [...leaderboard]
+      .sort((left, right) => {
+        if (right.alphaScore !== left.alphaScore) return right.alphaScore - left.alphaScore;
+        return right.fundValue - left.fundValue;
+      })
+      .slice(0, 10);
+
+    return (
+      <main className="flex flex-1 flex-col gap-4 phase-enter">
+        <header>
+          <div className="game-panel overflow-hidden p-8">
+            <div className="mb-10 flex flex-col gap-5 border-b border-white/10 pb-8 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.34em] text-cyan-100/65">Fund marked to market</p>
+                <h2 className="mt-3 text-4xl font-semibold text-white sm:text-6xl">{rankedOutcome.title}</h2>
+                <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/68">{rankedOutcome.description}</p>
+              </div>
+
+              <div className={`inline-flex rounded-full bg-gradient-to-r px-5 py-2 text-sm font-medium text-slate-950 ${rankedOutcome.accent}`}>
+                Alpha score: {scoreBreakdown.alphaScore}
+              </div>
             </div>
 
-            <div className={`inline-flex rounded-full bg-gradient-to-r px-5 py-2 text-sm font-medium text-slate-950 ${rankedOutcome.accent}`}>
-              Alpha score: {scoreBreakdown.alphaScore}
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+              <StatBlock label="Final fund value" value={formatMoney(totalValue)} hint="Cash + marked portfolio." />
+              <StatBlock label="Capital deployed" value={formatMoney(INITIAL_CAPITAL - cash)} hint="Checks written this run." />
+              <StatBlock label="Total raised" value={formatMoney(totalRaised)} hint="LP commitments closed." />
+              <StatBlock label="Reputation" value={String(reputation)} hint="Final market perception." />
+              <StatBlock label="Winners" value={String(winners)} hint="Positions at 2x+ MOIC." />
+            </div>
+          </div>
+        </header>
+
+        <section className="grid gap-4 xl:grid-cols-3">
+          <div className="game-panel p-6 game-card-hover">
+            <div className="mb-5 flex items-center gap-2 text-cyan-100">
+              <BarChart3 className="h-5 w-5" />
+              <p className="text-sm font-medium uppercase tracking-[0.2em]">Alpha breakdown</p>
+            </div>
+            <div className="space-y-4">
+              <MetricBar label="Fund value" value={clamp(scoreBreakdown.valueComponent / 8, 0, 100)} />
+              <MetricBar label="Winner density" value={clamp(scoreBreakdown.winnerComponent, 0, 100)} tone="hot" />
+              <MetricBar label="Reputation" value={clamp(scoreBreakdown.reputationComponent / 4, 0, 100)} />
+              <MetricBar label="Fundraising" value={clamp(scoreBreakdown.raiseComponent / 2.6, 0, 100)} />
+              <MetricBar label="Discipline" value={clamp(scoreBreakdown.disciplineComponent + 50, 0, 100)} tone="warn" />
+              <MetricBar label="Risk management" value={clamp(scoreBreakdown.riskComponent * 2.8, 0, 100)} />
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-            <StatBlock label="Final fund value" value={formatMoney(totalValue)} hint="Cash + marked portfolio." />
-            <StatBlock label="Capital deployed" value={formatMoney(INITIAL_CAPITAL - cash)} hint="Checks written in this run." />
-            <StatBlock label="Total raised" value={formatMoney(totalRaised)} hint="LP commitments closed." />
-            <StatBlock label="Reputation" value={String(reputation)} hint="Final market perception." />
-            <StatBlock label="Winners" value={String(winners)} hint="Positions at 2x+ MOIC." />
-          </div>
-        </div>
-      </header>
-
-      <section className="grid gap-4 xl:grid-cols-3">
-        <div className="game-panel p-6 game-card-hover">
-          <div className="mb-5 flex items-center gap-2 text-cyan-100">
-            <BarChart3 className="h-5 w-5" />
-            <p className="text-sm font-medium uppercase tracking-[0.2em]">Alpha breakdown</p>
-          </div>
           <div className="space-y-4">
-            <MetricBar label="Fund value" value={clamp(scoreBreakdown.valueComponent / 8, 0, 100)} />
-            <MetricBar label="Winner density" value={clamp(scoreBreakdown.winnerComponent, 0, 100)} tone="hot" />
-            <MetricBar label="Reputation" value={clamp(scoreBreakdown.reputationComponent / 5, 0, 100)} />
-            <MetricBar label="Fundraising" value={clamp(scoreBreakdown.raiseComponent / 4, 0, 100)} />
-            <MetricBar label="Discipline" value={clamp(scoreBreakdown.disciplineComponent + 50, 0, 100)} tone="warn" />
-            <MetricBar label="Risk management" value={clamp(scoreBreakdown.riskComponent * 2.5, 0, 100)} />
-          </div>
-
-          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/60">
-            <p className="font-medium text-white">Decision quality stats</p>
-            <div className="mt-3 grid grid-cols-2 gap-3 text-xs uppercase tracking-[0.18em]">
-              <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                <p className="text-white/45">Disciplined passes</p>
-                <p className="mt-1 text-lg text-emerald-100">{decisionInsights.disciplinedPasses}</p>
+            <div className="game-panel p-6 game-card-hover">
+              <div className="mb-6 flex items-center gap-2 text-cyan-100">
+                <Rocket className="h-5 w-5" />
+                <p className="text-sm font-medium uppercase tracking-[0.2em]">Best deal</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                <p className="text-white/45">Expensive misses</p>
-                <p className="mt-1 text-lg text-rose-100">{decisionInsights.expensiveMisses}</p>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                <p className="text-white/45">High-conviction hits</p>
-                <p className="mt-1 text-lg text-cyan-100">{decisionInsights.highConvictionHits}</p>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                <p className="text-white/45">Overheated bets</p>
-                <p className="mt-1 text-lg text-orange-100">{decisionInsights.overheatedBets}</p>
-              </div>
+              {bestDeal ? (
+                <>
+                  <h3 className="text-2xl font-semibold text-white">{bestDeal.company.name}</h3>
+                  <p className="mt-2 text-sm text-white/60">{bestDeal.company.headline}</p>
+                  <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
+                    <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+                      <p className="text-white/40">Check</p>
+                      <p className="mt-1 font-semibold text-white">{formatMoney(bestDeal.amount)}</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+                      <p className="text-white/40">MOIC</p>
+                      <p className="mt-1 font-semibold text-emerald-200">{bestDeal.multiple.toFixed(2)}x</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+                      <p className="text-white/40">Gain</p>
+                      <p className="mt-1 font-semibold text-white">{formatMoney(bestDeal.gain)}</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-white/55">No positions. You ran the fund like a bunker.</p>
+              )}
             </div>
-          </div>
-        </div>
 
-        <div className="space-y-4">
-          <div className="game-panel p-6 game-card-hover">
-            <div className="mb-6 flex items-center gap-2 text-cyan-100">
-              <Rocket className="h-5 w-5" />
-              <p className="text-sm font-medium uppercase tracking-[0.2em]">Best deal</p>
+            <div className="game-panel p-6 game-card-hover">
+              <div className="mb-6 flex items-center gap-2 text-orange-100">
+                <TriangleAlert className="h-5 w-5" />
+                <p className="text-sm font-medium uppercase tracking-[0.2em]">Biggest miss</p>
+              </div>
+              {biggestMiss ? (
+                <>
+                  <h3 className="text-2xl font-semibold text-white">{biggestMiss.name}</h3>
+                  <p className="mt-2 text-sm text-white/60">{biggestMiss.headline}</p>
+                  <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm text-white/60">
+                    You passed on one of the strongest hidden businesses in the deck. Discipline protects downside, but over-caution can delete upside.
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-white/55">No obvious miss this run.</p>
+              )}
             </div>
-            {bestDeal ? (
-              <>
-                <h3 className="text-2xl font-semibold text-white">{bestDeal.company.name}</h3>
-                <p className="mt-2 text-sm text-white/60">{bestDeal.company.headline}</p>
-                <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
-                  <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
-                    <p className="text-white/40">Check</p>
-                    <p className="mt-1 font-semibold text-white">{formatMoney(bestDeal.amount)}</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
-                    <p className="text-white/40">MOIC</p>
-                    <p className="mt-1 font-semibold text-emerald-200">{bestDeal.multiple.toFixed(2)}x</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
-                    <p className="text-white/40">Gain</p>
-                    <p className="mt-1 font-semibold text-white">{formatMoney(bestDeal.gain)}</p>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-white/55">No positions. You ran the fund like a bunker.</p>
-            )}
           </div>
 
           <div className="game-panel p-6 game-card-hover">
-            <div className="mb-6 flex items-center gap-2 text-orange-100">
-              <TriangleAlert className="h-5 w-5" />
-              <p className="text-sm font-medium uppercase tracking-[0.2em]">Biggest miss</p>
+            <div className="mb-5 flex items-center gap-2 text-emerald-100">
+              <Crown className="h-5 w-5" />
+              <p className="text-sm font-medium uppercase tracking-[0.2em]">Sector performance</p>
             </div>
-            {biggestMiss ? (
-              <>
-                <h3 className="text-2xl font-semibold text-white">{biggestMiss.name}</h3>
-                <p className="mt-2 text-sm text-white/60">{biggestMiss.headline}</p>
-                <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm text-white/60">
-                  You passed on one of the strongest hidden businesses in the deck. That restraint may have protected downside, but it also left serious
-                  upside on the table.
-                </div>
-              </>
+
+            {sectorPerformance.length === 0 ? (
+              <p className="text-sm text-white/55">No sector exposure tracked.</p>
             ) : (
-              <p className="text-sm text-white/55">No obvious miss. Either you invested boldly or the deck never made you blink.</p>
+              <div className="space-y-3">
+                {sectorPerformance.map((entry) => (
+                  <div key={entry.sector} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-base font-semibold text-white">{entry.sector}</p>
+                      <div className={`rounded-full px-3 py-1 text-xs font-medium ${entry.gain >= 0 ? 'bg-emerald-400/15 text-emerald-100' : 'bg-rose-400/15 text-rose-100'}`}>
+                        {entry.gain >= 0 ? '+' : ''}
+                        {formatMoney(entry.gain)}
+                      </div>
+                    </div>
+                    <div className="mt-3 grid grid-cols-3 gap-2 text-xs uppercase tracking-[0.16em] text-white/55">
+                      <div>
+                        <p>Checks</p>
+                        <p className="mt-1 text-sm font-medium text-white">{entry.checks}</p>
+                      </div>
+                      <div>
+                        <p>Invested</p>
+                        <p className="mt-1 text-sm font-medium text-white">{formatMoney(entry.invested)}</p>
+                      </div>
+                      <div>
+                        <p>Value</p>
+                        <p className="mt-1 text-sm font-medium text-white">{formatMoney(entry.currentValue)}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </div>
+        </section>
 
-        <div className="game-panel p-6 game-card-hover">
-          <div className="mb-5 flex items-center gap-2 text-emerald-100">
-            <Crown className="h-5 w-5" />
-            <p className="text-sm font-medium uppercase tracking-[0.2em]">Sector performance</p>
+        <section className="game-panel p-6 game-card-hover">
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-white/40">Leaderboard</p>
+              <h3 className="mt-2 text-2xl font-semibold text-white">Top allocators</h3>
+            </div>
+            <div className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/55">
+              Stored locally
+            </div>
           </div>
 
-          {sectorPerformance.length === 0 ? (
-            <p className="text-sm text-white/55">No sector exposure tracked.</p>
+          {rankedLeaderboard.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.03] px-5 py-10 text-center text-sm text-white/50">
+              No leaderboard entries yet.
+            </div>
           ) : (
-            <div className="space-y-3">
-              {sectorPerformance.map((entry) => (
-                <div key={entry.sector} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-base font-semibold text-white">{entry.sector}</p>
-                    <div
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        entry.gain >= 0 ? 'bg-emerald-400/15 text-emerald-100' : 'bg-rose-400/15 text-rose-100'
-                      }`}
-                    >
-                      {entry.gain >= 0 ? '+' : ''}
-                      {formatMoney(entry.gain)}
-                    </div>
-                  </div>
-                  <div className="mt-3 grid grid-cols-3 gap-2 text-xs uppercase tracking-[0.16em] text-white/55">
-                    <div>
-                      <p>Checks</p>
-                      <p className="mt-1 text-sm font-medium text-white">{entry.checks}</p>
-                    </div>
-                    <div>
-                      <p>Invested</p>
-                      <p className="mt-1 text-sm font-medium text-white">{formatMoney(entry.invested)}</p>
-                    </div>
-                    <div>
-                      <p>Value</p>
-                      <p className="mt-1 text-sm font-medium text-white">{formatMoney(entry.currentValue)}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[760px] border-separate border-spacing-y-2 text-left">
+                <thead>
+                  <tr className="text-xs uppercase tracking-[0.2em] text-white/45">
+                    <th className="px-3 py-2">#</th>
+                    <th className="px-3 py-2">Player</th>
+                    <th className="px-3 py-2">Alpha</th>
+                    <th className="px-3 py-2">Fund value</th>
+                    <th className="px-3 py-2">Winners</th>
+                    <th className="px-3 py-2">Outcome</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rankedLeaderboard.map((entry, index) => {
+                    const isCurrentRun = entry.runId === runId;
+                    return (
+                      <tr key={`${entry.runId}-${entry.createdAt}`} className={`rounded-2xl text-sm ${isCurrentRun ? 'bg-cyan-400/12 text-cyan-50' : 'bg-white/[0.03] text-white/80'}`}>
+                        <td className="rounded-l-2xl border border-r-0 border-white/10 px-3 py-3 font-semibold">{index + 1}</td>
+                        <td className="border border-x-0 border-white/10 px-3 py-3">{entry.playerLabel}</td>
+                        <td className="border border-x-0 border-white/10 px-3 py-3">{entry.alphaScore}</td>
+                        <td className="border border-x-0 border-white/10 px-3 py-3">{formatMoney(entry.fundValue)}</td>
+                        <td className="border border-x-0 border-white/10 px-3 py-3">{entry.winners}</td>
+                        <td className="rounded-r-2xl border border-l-0 border-white/10 px-3 py-3">{entry.outcome}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
+        </section>
+
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <button
+            type="button"
+            onClick={resetGame}
+            className="inline-flex items-center justify-center rounded-2xl border border-cyan-300/25 bg-cyan-300/12 px-6 py-4 text-sm font-medium uppercase tracking-[0.24em] text-cyan-50 transition hover:bg-cyan-300/18"
+          >
+            <TimerReset className="mr-2 h-4 w-4" />
+            New run setup
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetGame();
+              setTimeout(() => startGame(), 0);
+            }}
+            disabled={!playerIdentity}
+            className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] px-6 py-4 text-sm font-medium uppercase tracking-[0.24em] text-white/72 transition hover:bg-white/[0.08] hover:text-white disabled:cursor-not-allowed disabled:text-white/35"
+          >
+            <Rocket className="mr-2 h-4 w-4" />
+            Instant rematch
+          </button>
         </div>
-      </section>
 
-      <section className="game-panel p-6 game-card-hover">
-        <div className="mb-5 flex items-center justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-white/40">Portfolio ledger</p>
-            <h3 className="mt-2 text-2xl font-semibold text-white">Final marks</h3>
-          </div>
-          <div className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/55">
-            {portfolioMarks.length} positions
-          </div>
-        </div>
-
-        {portfolioMarks.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.03] px-5 py-10 text-center text-sm text-white/50">
-            No positions to show.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] border-separate border-spacing-y-2 text-left">
-              <thead>
-                <tr className="text-xs uppercase tracking-[0.2em] text-white/45">
-                  <th className="px-3 py-2">Company</th>
-                  <th className="px-3 py-2">Sector</th>
-                  <th className="px-3 py-2">Check</th>
-                  <th className="px-3 py-2">Value</th>
-                  <th className="px-3 py-2">MOIC</th>
-                  <th className="px-3 py-2">Gain</th>
-                </tr>
-              </thead>
-              <tbody>
-                {portfolioMarks.map((mark) => (
-                  <tr key={`${mark.company.id}-${mark.investedRound}-${mark.amount}`} className="rounded-2xl bg-white/[0.03] text-sm text-white/80">
-                    <td className="rounded-l-2xl border border-r-0 border-white/10 px-3 py-3 font-medium text-white">{mark.company.name}</td>
-                    <td className="border border-x-0 border-white/10 px-3 py-3">{mark.company.sector}</td>
-                    <td className="border border-x-0 border-white/10 px-3 py-3">{formatMoney(mark.amount)}</td>
-                    <td className="border border-x-0 border-white/10 px-3 py-3">{formatMoney(mark.currentValue)}</td>
-                    <td className="border border-x-0 border-white/10 px-3 py-3">{mark.multiple.toFixed(2)}x</td>
-                    <td
-                      className={`rounded-r-2xl border border-l-0 border-white/10 px-3 py-3 font-medium ${
-                        mark.gain >= 0 ? 'text-emerald-100' : 'text-rose-100'
-                      }`}
-                    >
-                      {mark.gain >= 0 ? '+' : ''}
-                      {formatMoney(mark.gain)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <button
-          type="button"
-          onClick={resetGame}
-          className="inline-flex items-center justify-center rounded-2xl border border-cyan-300/25 bg-cyan-300/12 px-6 py-4 text-sm font-medium uppercase tracking-[0.24em] text-cyan-50 transition hover:bg-cyan-300/18"
-        >
-          <TimerReset className="mr-2 h-4 w-4" />
-          New run setup
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            resetGame();
-            startGame();
-          }}
-          className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] px-6 py-4 text-sm font-medium uppercase tracking-[0.24em] text-white/72 transition hover:bg-white/[0.08] hover:text-white"
-        >
-          <Rocket className="mr-2 h-4 w-4" />
-          Instant rematch
-        </button>
-      </div>
-
-      {renderGlobalFooter('Goal: leave the run with the highest marked fund value, real winners in the book, and enough discipline to earn another vehicle.')}
-    </main>
-  );
+        {renderGlobalFooter('Goal: leave the run with the highest marked fund value, real winners, and enough discipline to earn another vehicle.')}
+      </main>
+    );
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
@@ -1628,15 +1643,7 @@ const Index = () => {
       <div className="relative isolate mx-auto flex min-h-screen max-w-[1600px] flex-col px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
         {renderGlobalHud()}
 
-        {mode === 'intro' ? (
-          renderIntro()
-        ) : mode === 'gameover' ? (
-          renderGameOver()
-        ) : isAllocatingPhase ? (
-          renderAllocatingPhase()
-        ) : (
-          renderRaisingPhase()
-        )}
+        {mode === 'intro' ? renderIntro() : mode === 'gameover' ? renderGameOver() : isAllocatingPhase ? renderAllocatingPhase() : renderRaisingPhase()}
 
         {mode === 'playing' && latestDecision && (
           <div className="pointer-events-none fixed bottom-4 right-4 z-40 hidden max-w-sm rounded-2xl border border-white/15 bg-slate-950/85 p-4 text-sm backdrop-blur-xl lg:block">
@@ -1651,6 +1658,37 @@ const Index = () => {
         {mode === 'playing' && (
           <div className="pointer-events-none fixed bottom-4 left-4 z-40 hidden rounded-2xl border border-white/12 bg-slate-950/80 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/55 backdrop-blur-xl xl:block">
             {currentGamePhase === 'allocating' ? 'Shortcuts: 1/2/3 invest · P pass' : 'Shortcuts: Q/W/E pitch first investor'}
+          </div>
+        )}
+
+        {mode === 'playing' && activePopup && (
+          <div className="fixed inset-x-0 top-6 z-50 flex justify-center px-4">
+            <div
+              className={`w-full max-w-2xl rounded-2xl border p-4 backdrop-blur-xl anim-scale-in ${
+                activePopup.tone === 'good'
+                  ? 'border-emerald-300/35 bg-emerald-500/12'
+                  : activePopup.tone === 'bad'
+                    ? 'border-rose-300/35 bg-rose-500/12'
+                    : activePopup.tone === 'report'
+                      ? 'border-cyan-300/35 bg-cyan-500/12'
+                      : 'border-white/20 bg-slate-900/70'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <p className="text-xs uppercase tracking-[0.25em] text-white/65">{activePopup.tone === 'report' ? 'Performance report' : 'Game update'}</p>
+                  <h4 className="mt-1 text-lg font-semibold text-white">{activePopup.title}</h4>
+                  <p className="mt-2 text-sm leading-relaxed text-white/80">{activePopup.description}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActivePopup(null)}
+                  className="rounded-full border border-white/20 px-2 py-1 text-xs uppercase tracking-[0.18em] text-white/70 transition hover:bg-white/10"
+                >
+                  close
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
