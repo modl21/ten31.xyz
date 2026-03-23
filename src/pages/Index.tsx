@@ -802,7 +802,7 @@ const Index = () => {
               Back the future. Dodge the hype. Compound conviction.
             </p>
             <h1 className="max-w-5xl text-5xl font-semibold leading-[0.95] text-white sm:text-6xl lg:text-8xl anim-fade-in anim-delay-2">
-              Build a venture fund
+              Build a fund
               <span className="bg-gradient-to-r from-cyan-200 via-white to-orange-300 bg-clip-text text-transparent"> quarter by quarter.</span>
             </h1>
             <p className="max-w-2xl text-lg leading-relaxed text-white/68 sm:text-xl anim-fade-in anim-delay-3">
