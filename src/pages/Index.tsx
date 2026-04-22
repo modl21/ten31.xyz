@@ -51,8 +51,8 @@ const Index = () => {
       <section className="min-h-[100vh] flex flex-col justify-between px-6 pt-24 pb-12 md:pt-28 md:pb-16">
         <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
           <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-heading font-bold leading-[1.05] tracking-tight mb-6 md:mb-8">
-            <span className="md:hidden">We back the builders of freedom tech.</span>
-            <span className="hidden md:inline">We back the builders<br className="hidden lg:inline" /> of freedom tech.</span>
+            <span className="md:hidden">We back the builders of freedom.</span>
+            <span className="hidden md:inline">We back the builders<br className="hidden lg:inline" /> of freedom.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed mb-8 md:mb-12 font-serif">
