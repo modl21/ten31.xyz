@@ -5,37 +5,37 @@ import { Footer } from '@/components/layout/Footer';
 import { Link } from 'react-router-dom';
 
 const PORTFOLIO = [
-  { name: 'Anchor Watch', desc: 'Regulated bitcoin insurance and enterprise-grade multi-institutional custody', category: 'Insurance', link: 'https://www.anchorwatch.com' },
-  { name: 'Battery', desc: 'Project finance vehicle integrating bitcoin as collateral', category: 'Credit products', link: 'https://www.batteryfinance.io/' },
-  { name: 'Bitnob', desc: 'Africa-based bitcoin and lightning financial services platform', category: 'Financial services', link: 'https://bitnob.com/' },
-  { name: 'Cathedra', desc: 'Miner focused on off-grid, stranded, and waste gas opportunities', category: 'Bitcoin mining', link: 'https://cathedra.com/' },
-  { name: 'Coinkite', desc: 'Premier manufacturer of consumer tools for custody and security', category: 'Hardware', link: 'https://www.coinkite.com' },
-  { name: 'debifi', desc: 'Non-custodial P2P lending platform focused on institutions', category: 'Credit products', link: 'https://debifi.com/' },
-  { name: 'Fedi', desc: 'Platform enhancing the ease and privacy of bitcoin custody', category: 'Lightning', link: 'https://www.fedi.xyz/' },
-  { name: 'Fold', desc: 'Bitcoin-linked consumer rewards', category: 'Consumer products', link: 'https://foldapp.com/' },
-  { name: 'Giga Energy', desc: 'Texas-based natural gas bitcoin mining infrastructure provider', category: 'Bitcoin mining', link: 'https://www.gigaenergy.com/' },
-  { name: 'GRIID', desc: 'Miner focused on vertical integration with nuclear / hydro power assets', category: 'Bitcoin mining', link: 'https://www.griid.com/' },
-  { name: 'Hodl Hodl', desc: 'Non-custodial P2P bitcoin lending and trading platform', category: 'Trading', link: 'https://hodlhodl.com/' },
-  { name: 'hoseki', desc: 'Non-custodial proof of ownership platform for bitcoin holders', category: 'Financial products', link: 'https://www.hoseki.app/' },
-  { name: 'IBEX', desc: 'Latin America-based lightning infrastructure business', category: 'Lightning', link: 'https://www.poweredbyibex.io/' },
-  { name: 'mempool.space', desc: 'The leading analytics platform for the bitcoin ecosystem', category: 'Analytics', link: 'https://mempool.space/' },
-  { name: 'Mutiny', desc: 'Unique privacy-focused lightning platform with web-first design', category: 'Tools', link: 'https://www.mutinywallet.com/' },
-  { name: 'nodl', desc: 'Sovereign and cloud-based bitcoin node infrastructure provider', category: 'Security infrastructure', link: 'https://www.nodl.eu/' },
-  { name: 'Oshi', desc: 'Bitcoin-linked consumer rewards tailored to local markets', category: 'Consumer products', link: 'https://www.oshi.tech/' },
-  { name: 'Peach', desc: 'P2P, non-custodial bitcoin exchange', category: 'Trading tools', link: 'https://peachbitcoin.com/' },
-  { name: 'Primal', desc: 'Open source nostr client and caching provider', category: 'Nostr', link: 'https://primal.net/' },
-  { name: 'River', desc: 'Bitcoin exchange and financial services provider', category: 'Trading', link: 'https://river.com/' },
-  { name: 'Satoshi Energy', desc: 'Mining services provider focused on smart power contracts', category: 'Mining services', link: 'https://satoshienergy.com/' },
-  { name: 'Sphinx', desc: 'Lightning-based social media and chat application', category: 'Consumer tech', link: 'https://sphinx.chat/' },
-  { name: 'Stakwork', desc: 'Lightning-based platform for remote tasks and AI training', category: 'AI tools', link: 'https://stakwork.com/' },
-  { name: 'Standard Bitcoin', desc: 'Hosted bitcoin mining operator providing on- and off-grid solutions', category: 'Bitcoin mining', link: 'https://standardbitcoin.com/' },
-  { name: 'Start9', desc: 'Developer of OS and personal server for self-hosting software', category: 'Freedom tech', link: 'https://start9.com/' },
-  { name: 'StatMuse', desc: 'AI/ML-based knowledge platform for sports, media, and bitcoin', category: 'AI', link: 'https://www.statmuse.com/' },
-  { name: 'Strike', desc: 'Leading bitcoin and lightning financial services platform', category: 'Lightning', link: 'https://strike.me/' },
-  { name: 'Unchained', desc: 'Collaborative custody platform offering suite of financial services', category: 'Financial services', link: 'https://unchained.com/' },
-  { name: 'Upstream Data', desc: 'Leading services provider for oil & gas producers mining bitcoin', category: 'Mining infrastructure', link: 'https://upstreamdata.com/' },
-  { name: 'Vida', desc: 'Lightning-powered content distribution and telecom platform', category: 'Lightning', link: 'https://vida.page/' },
-  { name: 'zaprite', desc: 'Bitcoin invoicing, project management, and expense tracking', category: 'Commercial services', link: 'https://zaprite.com/' },
+  { name: 'Anchor Watch', desc: 'Regulated bitcoin insurance, built on multi-institutional custody', category: 'Insurance', link: 'https://www.anchorwatch.com' },
+  { name: 'Battery', desc: 'Project finance that treats bitcoin as the collateral it is', category: 'Credit', link: 'https://www.batteryfinance.io/' },
+  { name: 'Bitnob', desc: 'Bitcoin and Lightning for Africa — remittances that actually work', category: 'Financial services', link: 'https://bitnob.com/' },
+  { name: 'Cathedra', desc: 'Mining the stranded, off-grid, and otherwise wasted energy', category: 'Mining', link: 'https://cathedra.com/' },
+  { name: 'Coinkite', desc: 'The people who made Coldcard. Enough said.', category: 'Hardware', link: 'https://www.coinkite.com' },
+  { name: 'debifi', desc: 'Non-custodial P2P lending for institutions who know better than to rehypothecate', category: 'Credit', link: 'https://debifi.com/' },
+  { name: 'Fedi', desc: 'Fedimint in your pocket — community custody that respects privacy', category: 'Lightning', link: 'https://www.fedi.xyz/' },
+  { name: 'Fold', desc: 'Spend dollars, stack sats. The gateway drug.', category: 'Consumer', link: 'https://foldapp.com/' },
+  { name: 'Giga Energy', desc: 'Flare gas to hashrate to AI compute, out of Texas', category: 'Mining', link: 'https://www.gigaenergy.com/' },
+  { name: 'GRIID', desc: 'Vertically integrated miner with nuclear and hydro power', category: 'Mining', link: 'https://www.griid.com/' },
+  { name: 'Hodl Hodl', desc: 'P2P trading and lending. No custody. No KYC theater.', category: 'Trading', link: 'https://hodlhodl.com/' },
+  { name: 'hoseki', desc: 'Prove you own your bitcoin without handing it over', category: 'Tools', link: 'https://www.hoseki.app/' },
+  { name: 'IBEX', desc: 'Lightning rails across Latin America', category: 'Lightning', link: 'https://www.poweredbyibex.io/' },
+  { name: 'mempool.space', desc: 'The block explorer. You already have it bookmarked.', category: 'Analytics', link: 'https://mempool.space/' },
+  { name: 'Mutiny', desc: 'Self-custodial Lightning that runs in your browser', category: 'Wallets', link: 'https://www.mutinywallet.com/' },
+  { name: 'nodl', desc: 'Bitcoin nodes, sovereign or cloud — your choice', category: 'Infrastructure', link: 'https://www.nodl.eu/' },
+  { name: 'Oshi', desc: 'Local bitcoin rewards for everyday spending', category: 'Consumer', link: 'https://www.oshi.tech/' },
+  { name: 'Peach', desc: 'P2P bitcoin exchange, no custody involved', category: 'Trading', link: 'https://peachbitcoin.com/' },
+  { name: 'Primal', desc: 'The nostr client that finally feels like an app', category: 'Nostr', link: 'https://primal.net/' },
+  { name: 'River', desc: 'Bitcoin-only financial services, built to last', category: 'Trading', link: 'https://river.com/' },
+  { name: 'Satoshi Energy', desc: 'Smart power contracts connecting miners and grids', category: 'Mining services', link: 'https://satoshienergy.com/' },
+  { name: 'Sphinx', desc: 'Chat and social, paid for with sats', category: 'Consumer', link: 'https://sphinx.chat/' },
+  { name: 'Stakwork', desc: 'Remote work and AI training, settled over Lightning', category: 'AI', link: 'https://stakwork.com/' },
+  { name: 'Standard Bitcoin', desc: 'Hosted mining, on-grid or off', category: 'Mining', link: 'https://standardbitcoin.com/' },
+  { name: 'Start9', desc: 'A personal server for the software you don\'t want to rent', category: 'Freedom tech', link: 'https://start9.com/' },
+  { name: 'StatMuse', desc: 'AI-native search for sports, media, and bitcoin', category: 'AI', link: 'https://www.statmuse.com/' },
+  { name: 'Strike', desc: 'Bitcoin and Lightning, for payments that just work', category: 'Lightning', link: 'https://strike.me/' },
+  { name: 'Unchained', desc: 'Collaborative custody and loans, done with your keys', category: 'Financial services', link: 'https://unchained.com/' },
+  { name: 'Upstream Data', desc: 'Mining rigs built for the oil patch', category: 'Mining infrastructure', link: 'https://upstreamdata.com/' },
+  { name: 'Vida', desc: 'Lightning-powered publishing and telecom', category: 'Lightning', link: 'https://vida.page/' },
+  { name: 'zaprite', desc: 'Invoicing and payments for businesses that take bitcoin', category: 'Commerce', link: 'https://zaprite.com/' },
 ];
 
 const Index = () => {
@@ -51,13 +51,13 @@ const Index = () => {
       <section className="min-h-[100vh] flex flex-col justify-between px-6 pt-24 pb-12 md:pt-28 md:pb-16">
         <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
           <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-heading font-bold leading-[1.05] tracking-tight mb-6 md:mb-8">
-            <span className="md:hidden">Leading investor in freedom technology.</span>
-            <span className="hidden md:inline">The world's leading investor<br className="hidden lg:inline" /> in freedom technology.</span>
+            <span className="md:hidden">We back the builders of freedom tech.</span>
+            <span className="hidden md:inline">We back the builders<br className="hidden lg:inline" /> of freedom tech.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed mb-8 md:mb-12 font-serif">
-            <span className="md:hidden">$250M+ deployed across 30+ companies since 2020.</span>
-            <span className="hidden md:inline">Since 2020, we have deployed over $250M across 30+ companies building foundational technologies for the financial infrastructure of the future.</span>
+            <span className="md:hidden">$250M+ deployed into 30+ bitcoin companies since 2020.</span>
+            <span className="hidden md:inline">Since 2020 we've put more than $250M to work across 30+ companies — mostly as lead, often first check. We write conviction-sized checks into the teams building what bitcoin needs next.</span>
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -120,8 +120,8 @@ const Index = () => {
               </div>
               <h3 className="text-3xl md:text-4xl font-heading font-bold tracking-tight mb-4">Strike</h3>
               <p className="text-muted-foreground leading-relaxed font-serif">
-                <span className="md:hidden">Bitcoin and lightning financial services. TEN31 is Strike's largest investor.</span>
-                <span className="hidden md:inline">The leading bitcoin and lightning financial services platform. TEN31 is the largest investor in Strike, reflecting our deep conviction in the company's mission to build the future of payments.</span>
+                <span className="md:hidden">Bitcoin and lightning, done right. We're Strike's largest investor.</span>
+                <span className="hidden md:inline">Bitcoin-native payments that actually work. We're Strike's largest investor — and have been backing Jack and the team since before most people understood what Lightning was for.</span>
               </p>
             </a>
 
@@ -138,8 +138,8 @@ const Index = () => {
               </div>
               <h3 className="text-3xl md:text-4xl font-heading font-bold tracking-tight mb-4">Giga Energy</h3>
               <p className="text-muted-foreground leading-relaxed font-serif">
-                <span className="md:hidden">Bitcoin mining and AI infrastructure. TEN31 was Giga's first investor.</span>
-                <span className="hidden md:inline">Texas-based bitcoin mining and AI infrastructure provider. TEN31 was the first institutional investor in Giga, backing the company from its earliest days.</span>
+                <span className="md:hidden">Turning stranded gas into hashrate (and now AI). We were first check.</span>
+                <span className="hidden md:inline">A Texas outfit turning stranded natural gas into hashrate — and now AI compute. We wrote the first institutional check when they were still a handful of guys in the oil patch.</span>
               </p>
             </a>
           </div>
@@ -152,21 +152,25 @@ const Index = () => {
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-20">
             <div>
               <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-8">
-                Investment Thesis
+                How we think
               </h2>
               <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed font-serif">
-                We believe freedom scales through profitable business.
+                Freedom doesn't scale through ideology. It scales through businesses people actually want to use.
+              </p>
+              <p className="text-base text-muted-foreground/80 leading-relaxed font-serif mt-6 max-w-md">
+                So we invest in the unsexy work — rails, custody, mining, tools — that makes the rest of it possible.
               </p>
             </div>
 
             <div className="space-y-0 border-t border-border lg:border-t-0 lg:border-l lg:border-border lg:pl-16 xl:pl-20 pt-8 lg:pt-0">
               {[
-                { title: 'Bitcoin Native' },
-                { title: 'Open Source Software' },
-                { title: 'Artificial Intelligence' },
+                { title: 'Bitcoin, first', desc: 'Sound money is the load-bearing wall. Everything we fund either strengthens it or runs on it.' },
+                { title: 'Open source', desc: 'Protocols beat platforms. Permissionless beats permissioned. Every time.' },
+                { title: 'AI, on our terms', desc: 'The compute buildout is happening whether we like it or not. We\'d rather it happen with bitcoiners in the room.' },
               ].map((item, i) => (
-                <div key={i} className="py-5 border-b border-border last:border-b-0">
-                  <h3 className="text-lg font-heading font-bold">{item.title}</h3>
+                <div key={i} className="py-6 border-b border-border last:border-b-0">
+                  <h3 className="text-lg font-heading font-bold mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground/80 leading-relaxed font-serif">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -181,8 +185,8 @@ const Index = () => {
             <div>
               <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Portfolio</h2>
               <p className="text-lg text-muted-foreground max-w-xl font-serif">
-                <span className="md:hidden">30+ companies across freedom tech.</span>
-                <span className="hidden md:inline">The founders leading the charge across the spectrum of freedom tech.</span>
+                <span className="md:hidden">The teams we've bet on.</span>
+                <span className="hidden md:inline">The teams we've bet on — from miners and custodians to the consumer apps your parents might eventually use.</span>
               </p>
             </div>
             <p className="text-xs tracking-widest uppercase text-muted-foreground/50 font-medium">{PORTFOLIO.length} Companies</p>
@@ -211,10 +215,10 @@ const Index = () => {
       {/* Team CTA */}
       <section className="py-24 md:py-28 px-6">
         <div className="container mx-auto max-w-6xl text-center">
-          <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-6">Pioneered by Industry Vets</h2>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-6">Run by people who've been here a while</h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 font-serif">
-            <span className="md:hidden">Decades of experience in PE, VC, and bitcoin since 2013.</span>
-            <span className="hidden md:inline">Led by experts with decades of experience in private equity, venture capital, and deep roots in the bitcoin ecosystem since 2013.</span>
+            <span className="md:hidden">Bitcoin since 2013. Careers in PE and VC. Still showing up.</span>
+            <span className="hidden md:inline">We've been around bitcoin since 2013, with careers in private equity and venture capital before that. Long enough to know which cycles matter and which are noise.</span>
           </p>
           <Link
             to="/team"

@@ -61,7 +61,7 @@ export const Team = () => {
           <div className="max-w-3xl mb-20">
             <h1 className="text-5xl md:text-6xl font-heading font-bold tracking-tight mb-6">Team</h1>
             <p className="text-lg text-muted-foreground leading-relaxed font-serif">
-              A collective of veterans with decades of experience in global private equity, venture capital, and deep roots in the bitcoin ecosystem.
+              A small group with long careers in private equity and venture capital, and a lot of time spent in bitcoin. We've been doing this since before it was respectable.
             </p>
           </div>
 

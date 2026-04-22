@@ -19,7 +19,7 @@ export const Insights = () => {
           <div className="max-w-3xl mb-20">
             <h1 className="text-5xl md:text-6xl font-heading font-bold tracking-tight mb-6">Insights</h1>
             <p className="text-lg text-muted-foreground leading-relaxed font-serif">
-              Essays, research, and analysis on bitcoin and the architecture of freedom technology.
+              Things we've written down — from memos we sent LPs to arguments we're still having over coffee at the park.
             </p>
           </div>
 

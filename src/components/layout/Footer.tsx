@@ -10,7 +10,7 @@ export const Footer = () => {
               TEN31
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs font-serif italic">
-              The world's leading investor in freedom technology.
+              Backing the people building what bitcoin needs next.
             </p>
           </div>
 

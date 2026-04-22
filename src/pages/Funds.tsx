@@ -17,7 +17,7 @@ export const Funds = () => {
           <div className="max-w-3xl mb-20">
             <h1 className="text-5xl md:text-6xl font-heading font-bold tracking-tight mb-6">Funds</h1>
             <p className="text-lg text-muted-foreground leading-relaxed font-serif">
-              Providing investors with diversified exposure across all verticals of the bitcoin ecosystem, leading with 90% deployment as lead investor.
+              Three vehicles, one thesis. We lead about 90% of our rounds — which means we do real diligence, write the term sheet, and usually take a board seat. No spray and pray.
             </p>
           </div>
 
@@ -93,7 +93,7 @@ export const Funds = () => {
 
           <div className="mt-20 border-l-2 border-border pl-6">
             <p className="text-xs text-muted-foreground/50 leading-relaxed max-w-2xl font-serif italic">
-              Disclaimer: The information provided on this website is for informational purposes only and is not intended as a solicitation for investment in any of our funds. Past performance is not necessarily indicative of future results.
+              Nothing on this page is a solicitation or an offer to sell securities. Past performance doesn't tell you what happens next. You know the drill.
             </p>
           </div>
         </div>
