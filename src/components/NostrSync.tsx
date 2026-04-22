@@ -18,17 +18,12 @@ export function NostrSync() {
   useEffect(() => {
     if (!user) return;
 
-    let isMounted = true;
-    const controller = new AbortController();
-
     const syncRelaysFromNostr = async () => {
       try {
         const events = await nostr.query(
           [{ kinds: [10002], authors: [user.pubkey], limit: 1 }],
-          { signal: controller.signal }
+          { signal: AbortSignal.timeout(5000) }
         );
-
-        if (!isMounted) return;
 
         if (events.length > 0) {
           const event = events[0];
@@ -56,26 +51,11 @@ export function NostrSync() {
           }
         }
       } catch (error) {
-        // AbortError is expected when component unmounts or signal is aborted
-        if (error instanceof Error && error.name === 'AbortError') {
-          return;
-        }
         console.error('Failed to sync relays from Nostr:', error);
       }
     };
 
-    // Set a timeout to abort the request after 5 seconds
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-    }, 5000);
-
     syncRelaysFromNostr();
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timeoutId);
-      controller.abort();
-    };
   }, [user, config.relayMetadata.updatedAt, nostr, updateConfig]);
 
   return null;

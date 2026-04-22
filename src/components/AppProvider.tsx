@@ -11,23 +11,10 @@ interface AppProviderProps {
   defaultConfig: AppConfig;
 }
 
-// Custom URL schema that accepts both http/https and wss/wss URLs (for Nostr relays)
-const relayUrlSchema = z.string().refine(
-  (val) => {
-    try {
-      const url = new URL(val);
-      return url.protocol === 'wss:' || url.protocol === 'ws:' || url.protocol === 'https:' || url.protocol === 'http:';
-    } catch {
-      return false;
-    }
-  },
-  { message: 'Invalid relay URL' }
-);
-
 // Zod schema for RelayMetadata validation
 const RelayMetadataSchema = z.object({
   relays: z.array(z.object({
-    url: relayUrlSchema,
+    url: z.url(),
     read: z.boolean(),
     write: z.boolean(),
   })),
